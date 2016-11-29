@@ -6,9 +6,6 @@
 
 package lgraphs;
 
-import java.util.Arrays;
-import lgraphs.LGraph;
-import lgraphs.LGraphNode;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +38,7 @@ public class LGraphMatcher {
         status = null;
         for(int i = 0;i<m;i++) {
             LGraphNode pn = pattern.getNodes().get(i);
-            options[i] = new LinkedList<>();
+            options[i] = new LinkedList<LGraphNode>();
             for(LGraphNode rn:reference.getNodes()) {
                 if (pn.subsumes(rn)) options[i].add(rn);
                 // negation:
@@ -68,7 +65,7 @@ public class LGraphMatcher {
         for(int i = 0;i<m;i++) {
             LGraphNode pn = pattern.getNodes().get(i);
             LGraphNode r_tmp = map.get(pn);
-            options[i] = new LinkedList<>();
+            options[i] = new LinkedList<LGraphNode>();
             if (r_tmp!=null) {
                 // if it's int he "map", there is only one option for this node:
                 options[i].add(r_tmp);
@@ -130,7 +127,7 @@ public class LGraphMatcher {
     }
     
     public Map<LGraphNode, LGraphNode> mappingFromStatus() {
-        Map<LGraphNode, LGraphNode> map = new HashMap<>();
+        Map<LGraphNode, LGraphNode> map = new HashMap<LGraphNode, LGraphNode>();
         for(int i = 0;i<m;i++) {
             map.put(pattern.getNodes().get(i), options[i].get(status[i]));
         }

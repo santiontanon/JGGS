@@ -25,7 +25,7 @@ public class LGraphRewritingGrammar {
     List<LGraphRewritingRule> rules;
     
     public LGraphRewritingGrammar() {
-        rules = new LinkedList<>();
+        rules = new LinkedList<LGraphRewritingRule>();
     }
     
     
@@ -55,11 +55,11 @@ public class LGraphRewritingGrammar {
                 double decay = Double.parseDouble(st.nextToken());
                 String patternString = br.readLine().trim();
                 String resultString = br.readLine().trim();
-                Map<String, LGraphNode> patternMap = new HashMap<>();
-                Map<String, LGraphNode> resultMap = new HashMap<>();
+                Map<String, LGraphNode> patternMap = new HashMap<String, LGraphNode>();
+                Map<String, LGraphNode> resultMap = new HashMap<String, LGraphNode>();
                 LGraph pattern = LGraph.fromString(patternString, patternMap);
                 LGraph result = LGraph.fromString(resultString, resultMap);
-                Map<LGraphNode, LGraphNode> map = new HashMap<>();
+                Map<LGraphNode, LGraphNode> map = new HashMap<LGraphNode, LGraphNode>();
                 for(String nodeName:resultMap.keySet()) {
                     if (patternMap.containsKey(nodeName)) {
                         map.put(resultMap.get(nodeName), patternMap.get(nodeName));

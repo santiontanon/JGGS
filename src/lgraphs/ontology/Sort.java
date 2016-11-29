@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class Sort {
     
-    static HashMap<String, Sort> table = new HashMap<>();
+    static HashMap<String, Sort> table = new HashMap<String, Sort>();
     static {
         try {
             Sort.newSort("any");
@@ -26,8 +26,8 @@ public class Sort {
     }
     
     String name;
-    List<Sort> parents = new LinkedList<>();
-    List<Sort> children = new LinkedList<>();
+    List<Sort> parents = new LinkedList<Sort>();
+    List<Sort> children = new LinkedList<Sort>();
     
     public static Sort getOrNewSort(String a_name) throws Exception {
         Sort l = table.get(a_name);
@@ -105,7 +105,7 @@ public class Sort {
     }
     
     public List<Sort> getAllChildren() {
-        List<Sort> ret = new LinkedList<>();
+        List<Sort> ret = new LinkedList<Sort>();
         ret.addAll(children);
         for(Sort p:children) {
             for(Sort s:p.getAllChildren()) {
@@ -120,7 +120,7 @@ public class Sort {
     }
 
     public List<Sort> getAllParents() {
-        List<Sort> ret = new LinkedList<>();
+        List<Sort> ret = new LinkedList<Sort>();
         ret.addAll(parents);
         for(Sort p:parents) {
             ret.addAll(p.getAllParents());

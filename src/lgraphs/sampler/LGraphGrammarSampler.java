@@ -22,11 +22,11 @@ public class LGraphGrammarSampler {
     LGraph currentGraph;
     Random r;
     
-    HashMap<String,Integer> ruleApplicationCounts = new HashMap<>();
-    HashMap<String,Double> currentRuleWeights = new HashMap<>();
-    HashMap<String,Double> currentRuleDecay = new HashMap<>();
+    HashMap<String,Integer> ruleApplicationCounts = new HashMap<String,Integer>();
+    HashMap<String,Double> currentRuleWeights = new HashMap<String,Double>();
+    HashMap<String,Double> currentRuleDecay = new HashMap<String,Double>();
     
-    HashMap<String,Integer> ruleApplicationLimit = new HashMap<>();
+    HashMap<String,Integer> ruleApplicationLimit = new HashMap<String,Integer>();
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
         currentGraph = a_graph;
@@ -81,8 +81,8 @@ public class LGraphGrammarSampler {
     // Generates all the possible applications of rules, and then selects one at random
     // Does not update weights
     public LGraph applyRuleRandomly() {
-        List<LGraph> results = new LinkedList<>();
-        List<String> ruleNames = new LinkedList<>();
+        List<LGraph> results = new LinkedList<LGraph>();
+        List<String> ruleNames = new LinkedList<String>();
         LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar);
         // enforce the maximum number of applications of a given rule:
         for(String ruleName:ruleApplicationLimit.keySet()) {
@@ -110,10 +110,10 @@ public class LGraphGrammarSampler {
     // Generates all the possible applications of rules, and then selects one stochastically,
     // based on the current rule weights. Then updates the weights with their respective decays
     public LGraph applyRuleStochastically() throws Exception {
-        List<LGraph> results = new LinkedList<>();
-        List<String> ruleNames = new LinkedList<>();
-        List<String> differentRuleNames = new LinkedList<>();
-        List<Double> ruleWeights = new LinkedList<>();
+        List<LGraph> results = new LinkedList<LGraph>();
+        List<String> ruleNames = new LinkedList<String>();
+        List<String> differentRuleNames = new LinkedList<String>();
+        List<Double> ruleWeights = new LinkedList<Double>();
         double totalWeight = 0;
         LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar);
         // enforce the maximum number of applications of a given rule:
@@ -151,7 +151,7 @@ public class LGraphGrammarSampler {
         int selected = Sampler.weighted(probabilities);
         String selectedRuleName = differentRuleNames.get(selected);
         
-        List<LGraph> filteredResults = new LinkedList<>();
+        List<LGraph> filteredResults = new LinkedList<LGraph>();
         for(int i = 0;i<results.size();i++) {
             if (ruleNames.get(i).equals(selectedRuleName)) filteredResults.add(results.get(i));
         }

@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JFrame;
 import lgraphs.LGraph;
+import lgraphs.LGraphNode;
 import lgraphs.ontology.Ontology;
 import lgraphs.ontology.Sort;
 import lgraphs.sampler.LGraphGrammarSampler;
@@ -47,10 +48,10 @@ public class GrammarVisualTest {
         generator.printRuleApplicationCounts();
         
         JFrame v = LGraphVisualizer.newWindow("Resulting graph", 1200, 600, lastGraph);
-        List<Sort> ll = new LinkedList<>();
+        List<Sort> ll = new LinkedList<Sort>();
         ll.add(Sort.getSort("location"));
         ll.add(Sort.getSort("lock"));
-        LGraph locationGraph = lastGraph.cloneSubGraph(ll, new HashMap<>());
+        LGraph locationGraph = lastGraph.cloneSubGraph(ll, new HashMap<LGraphNode, LGraphNode>());
         JFrame v2 = LGraphVisualizer.newWindow("Location graph", 1200, 600, locationGraph);
     }
 }

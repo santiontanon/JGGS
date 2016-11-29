@@ -15,8 +15,8 @@ import java.util.List;
  * @author santi
  */
 public class LGraphNode {
-    protected List<Sort> labels = new ArrayList<>();
-    protected List<LGraphEdge> edges = new ArrayList<>();
+    protected List<Sort> labels = new ArrayList<Sort>();
+    protected List<LGraphEdge> edges = new ArrayList<LGraphEdge>();
     
     // only for patterns:
     public Sort notLabel = null;   // To indicate that the label is NOT "notLabel" (useful for patterns)
@@ -69,7 +69,7 @@ public class LGraphNode {
     }
     
     public void addNegationEdge(Sort edgeLabel, LGraphNode node) {
-        if (notEdges==null) notEdges = new ArrayList<>();
+        if (notEdges==null) notEdges = new ArrayList<LGraphEdge>();
         notEdges.add(new LGraphEdge(edgeLabel, this, node));
     }
     
@@ -90,7 +90,7 @@ public class LGraphNode {
     }
 
     public List<LGraphEdge> getChildren(Sort edgeLabel) {
-        List<LGraphEdge> l = new ArrayList<>();
+        List<LGraphEdge> l = new ArrayList<LGraphEdge>();
         for(LGraphEdge e:edges) {
             if (edgeLabel.subsumes(e.label)) l.add(e);
         }
@@ -105,7 +105,7 @@ public class LGraphNode {
     }
     
     public List<LGraphEdge> getEdgesTo(LGraphNode target) {
-        List<LGraphEdge> l = new ArrayList<>();
+        List<LGraphEdge> l = new ArrayList<LGraphEdge>();
         for(LGraphEdge e:edges) {
             if (e.end == target) l.add(e);
         }

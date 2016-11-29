@@ -49,7 +49,7 @@ public class LGraphRewritingRule {
     }
     
     public LGraph applyRule(LGraph graph, Map<LGraphNode, LGraphNode> matching) {
-        Map<LGraphNode, LGraphNode> cloneMap = new HashMap<>();
+        Map<LGraphNode, LGraphNode> cloneMap = new HashMap<LGraphNode, LGraphNode>();
         LGraph clone = graph.clone(cloneMap);
         
         // Step 1: remove all the edges from the pattern in the clone:
@@ -82,7 +82,7 @@ public class LGraphRewritingRule {
         }
         
         // Step 2: add all the nodes from result to the clone:
-        Map<LGraphNode, LGraphNode> resultMap = new HashMap<>();
+        Map<LGraphNode, LGraphNode> resultMap = new HashMap<LGraphNode, LGraphNode>();
         for(LGraphNode nr:result.getNodes()) {
             LGraphNode nodeClone = map.get(nr);
             if (nodeClone==null) {

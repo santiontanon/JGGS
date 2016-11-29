@@ -19,7 +19,7 @@ public class LGraphGrammarMatcher {
     LGraphRewritingGrammar grammar;
     int currentRule;
     LGraphRuleMatcher matcher;
-    List<String> forbiddenRules = new LinkedList<>();
+    List<String> forbiddenRules = new LinkedList<String>();
     
     public LGraphGrammarMatcher(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
         graph = a_graph;

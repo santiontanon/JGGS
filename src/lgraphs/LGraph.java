@@ -17,10 +17,10 @@ import java.util.Map;
  * @author santi
  */
 public class LGraph {
-    List<LGraphNode> nodes = new ArrayList<>();
+    List<LGraphNode> nodes = new ArrayList<LGraphNode>();
 
     public static LGraph fromString(String string) throws Exception {
-        return fromString(string, new HashMap<>());
+        return fromString(string, new HashMap<String, LGraphNode>());
     }
 
     public static LGraph fromString(String string, Map<String, LGraphNode> nodes) throws Exception {
