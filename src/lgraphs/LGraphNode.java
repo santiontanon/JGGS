@@ -19,8 +19,7 @@ public class LGraphNode {
     protected List<LGraphEdge> edges = new ArrayList<LGraphEdge>();
     
     // only for patterns:
-    public Sort notLabel = null;   // To indicate that the label is NOT "notLabel" (useful for patterns)
-    public List<LGraphEdge> notEdges = null;    // To indicate edges that should NOT be in the graph (useful for patterns)
+    public List<Sort> notLabels = new ArrayList<Sort>();  // To indicate that the label is NOT "notLabel" (useful for patterns)
 
     protected LGraphNode() {
     }
@@ -46,7 +45,7 @@ public class LGraphNode {
 
     public static LGraphNode newNegaTiveLGraphNode(Sort l) {
         LGraphNode n = new LGraphNode();
-        n.notLabel = l;
+        n.notLabels.add(l);
         return n;
     }
 
@@ -54,6 +53,21 @@ public class LGraphNode {
         if (a_label==null) System.err.println("LGraphNode.setLabel called with null label");
         labels.clear();
         labels.add(a_label);
+    }
+
+    public void addLabel(Sort a_label) {
+        if (a_label==null) System.err.println("LGraphNode.addLabel called with null label");
+        List<Sort> toDelete = new ArrayList<Sort>();
+        for(Sort s:labels) {
+            if (s.subsumes(a_label)) toDelete.add(s);
+        }
+        labels.removeAll(toDelete);
+        labels.add(a_label);
+    }
+
+    public void addNotLabel(Sort a_label) {
+        if (a_label==null) System.err.println("LGraphNode.notLabels called with null label");
+        notLabels.add(a_label);
     }
 
     public void setLabels(List<Sort> a_labels) {
@@ -67,12 +81,7 @@ public class LGraphNode {
     public void addEdge(Sort edgeLabel, LGraphNode node) {
         edges.add(new LGraphEdge(edgeLabel, this, node));
     }
-    
-    public void addNegationEdge(Sort edgeLabel, LGraphNode node) {
-        if (notEdges==null) notEdges = new ArrayList<LGraphEdge>();
-        notEdges.add(new LGraphEdge(edgeLabel, this, node));
-    }
-    
+        
     public void addEdge(LGraphEdge e) {
         e.start = this;
         edges.add(e);
@@ -128,38 +137,56 @@ public class LGraphNode {
 
     public boolean subsumedBy(Sort s) {
         for(Sort s2:labels) {
-            if (!s.subsumes(s2)) return false;
+            if (s.subsumes(s2)) return true;
         }
-        return true;
+        return false;
     }
 
     public boolean subsumes(Sort s) {
         for(Sort s2:labels) {
             if (!s2.subsumes(s)) return false;
         }
+        for(Sort s2:notLabels) {
+            if (s2.subsumes(s)) return false;
+        }
         return true;
     }
 
     public boolean subsumes(LGraphNode n) {
-        for(Sort s:labels) {
-            if (!n.subsumedBy(s)) return false;
+        for(Sort s2:labels) {
+            if (!n.subsumedBy(s2)) return false;
+        }        
+        for(Sort s:notLabels) {
+            if (n.subsumedBy(s)) return false;
         }
         return true;
     }
 
     public String toString() {
-        if (labels.size()==1) {
-            return "node(" + labels.get(0) + ")";
-        } else {
-            return "node(" + labels + ")";
-        }
+        return "node(" + toStringLabel() + ")";
     }
 
     public String toStringLabel() {
-        if (labels.size() == 1) {
-            return labels.get(0).getName();
+        List<String> tmp = new ArrayList<String>();
+        
+        for(Sort l:labels) tmp.add("" + l);
+        for(Sort l:notLabels) {
+            tmp.add("~" + l);
+        }
+        
+        if (tmp.size() == 1) {
+            return tmp.get(0);
         } else {
-            return labels.toString();
+            String buffer = "{";
+            for(int i = 0;i<tmp.size();i++) {
+                String l = tmp.get(i);
+                if (i==0) {
+                    buffer += l;
+                } else {
+                    buffer += "," + l;
+                }
+            }
+            return buffer + "}";
         }
     }
 }

@@ -11,10 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  *
  * @author santi
+ * 
  */
 public class LGraph {
     List<LGraphNode> nodes = new ArrayList<LGraphNode>();
@@ -23,7 +25,28 @@ public class LGraph {
         return fromString(string, new HashMap<String, LGraphNode>());
     }
 
-    public static LGraph fromString(String string, Map<String, LGraphNode> nodes) throws Exception {
+    
+    /*
+    Syntax:
+        Graph:
+            NAME:LABEL(LABEL:NAME, ..., LABEL:NAME), ...
+            NAME:LABEL(LABEL[[min]-[max]] ... ), ...
+        NAME:
+            String
+        LABEL:
+            [~]String
+            {[~]String, ..., [~]String}
+            
+    Todo:
+    OK - multiple labels nodes
+    OK - remove "not" in edges
+    OK - add negated graphs
+    - cardinality restrictions
+    - multiple labels on edges
+    
+    */
+    
+    public static LGraph fromString(String string, Map<String, LGraphNode> nodes) throws Exception {        
         LGraph graph = new LGraph();
         int idx = 0;
         int l = string.length();
@@ -38,27 +61,37 @@ public class LGraph {
                 String nodeLabel = "";
                 while(string.charAt(idx)!=':') nodeName+=string.charAt(idx++);
                 idx++;
+
                 while(string.charAt(idx)!='(') nodeLabel+=string.charAt(idx++);
                 idx++;
-                if (nodeLabel.startsWith("~")) {
-                    nodeLabel = nodeLabel.substring(1);
-                    negation = true;
-                }
-                node = nodes.get(nodeName);
-    //            System.out.println("label: " + nodeLabel + (negation ? "(negated)":""));
-    //            System.out.println("Node name: " + nodeName);
-                if (node==null) {
-                    if (negation) {
-                        node = graph.addNotNode(Sort.getSort(nodeLabel));
-                    } else {
-                        node = graph.addNode(Sort.getSort(nodeLabel));
-                    }
-                    nodes.put(nodeName, node);
+
+                List<String> labelStrings = new ArrayList<String>();
+                if (nodeLabel.startsWith("{")) {
+                    StringTokenizer st = new StringTokenizer(nodeLabel,"{,}");
+                    while(st.hasMoreTokens()) labelStrings.add(st.nextToken());
                 } else {
-                    if (negation) {
-                        node.notLabel = Sort.getSort(nodeLabel);
+                    labelStrings.add(nodeLabel);
+                }
+                
+                for(String labelString:labelStrings) {
+                    if (labelString.startsWith("~")) {
+                        labelString = labelString.substring(1);
+                        negation = true;
+                    }
+                    node = nodes.get(nodeName);
+                    if (node==null) {
+                        if (negation) {
+                            node = graph.addNotNode(Sort.getSort(labelString));
+                        } else {
+                            node = graph.addNode(Sort.getSort(labelString));
+                        }
+                        nodes.put(nodeName, node);
                     } else {
-                        node.setLabel(Sort.getSort(nodeLabel));
+                        if (negation) {
+                            node.addNotLabel(Sort.getSort(labelString));
+                        } else {
+                            node.addLabel(Sort.getSort(labelString));
+                        }
                     }
                 }
             }
@@ -69,7 +102,6 @@ public class LGraph {
                     idx++;
                     break;
                 }
-                boolean negation = false;
                 String edgeLabel = "";
                 String targetNodeName = "";
                 while(string.charAt(idx)!=':') edgeLabel+=string.charAt(idx++);
@@ -82,15 +114,7 @@ public class LGraph {
                     targetNode = graph.addNode(Sort.getSort("any"));
                     nodes.put(targetNodeName, targetNode);
                 }
-                if (edgeLabel.startsWith("~")) {
-                    edgeLabel = edgeLabel.substring(1);
-                    negation = true;
-                }
-                if (negation) {
-                    node.addNegationEdge(Sort.getSort(edgeLabel), targetNode);
-                } else {
-                    node.addEdge(Sort.getSort(edgeLabel), targetNode);
-                }
+                node.addEdge(Sort.getSort(edgeLabel), targetNode);
             }while(true);
         }while(true);
 
@@ -142,10 +166,6 @@ public class LGraph {
         for(LGraphNode n:nodes) {
             LGraphNode rn = map.get(n);
             if (!n.subsumes(rn)) return false;
-            if (n.notLabel!=null) {
-                // node label negation:
-                if (rn.subsumedBy(n.notLabel)) return false;
-            }
             for(LGraphEdge e:n.edges) {
                 boolean found = false;
                 for(LGraphEdge re:rn.edges) {
@@ -156,17 +176,6 @@ public class LGraph {
                     }
                 }
                 if (!found) return false;
-            }
-            // edge negation:
-            if (n.notEdges!=null) {
-                for(LGraphEdge e:n.notEdges) {
-                    for(LGraphEdge re:rn.edges) {
-                        if (e.label.subsumes(re.label) &&
-                            re.end == map.get(e.end)) {
-                            return false;
-                        }
-                    }
-                }
             }
         }
         return true;
@@ -328,29 +337,13 @@ public class LGraph {
             if (!first) tmp+=",";
             first = false;
             tmp += nodePrefix + nodes.indexOf(node) + ":";
-            boolean first2 = true;
-            for(Sort s:node.labels) {
-                if (first2) {
-                    tmp+=s.getName();
-                    first2 = false;
-                } else {
-                    tmp+="," + s.getName();
-                }
-            }
-            if (node.notLabel!=null) tmp += "~" + node.notLabel;
+            tmp += node.toStringLabel();
             tmp += "(";
             boolean first3 = true;
             for(LGraphEdge edge:node.edges) {
                 if (!first3) tmp+=",";
                 first3 = false;
                 tmp+= edge.label + ":" + nodePrefix + nodes.indexOf(edge.end);
-            }
-            if (node.notEdges!=null) {
-                for(LGraphEdge edge:node.notEdges) {
-                    if (!first3) tmp+=",";
-                    first3 = false;
-                    tmp+= "~" + edge.label + ":" + nodePrefix + nodes.indexOf(edge.end);
-                }
             }
             tmp += ")";
         }

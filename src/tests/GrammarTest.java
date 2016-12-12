@@ -20,6 +20,8 @@ public class GrammarTest {
         Ontology ontology = new Ontology("data/sampleOntology.xml");
         LGraphRewritingGrammar grammar = LGraphRewritingGrammar.load("data/sampleGrammar.txt");
         
+        System.out.println(grammar);
+        
         // Create an initial graph:
         LGraph graph = LGraph.fromString("N0:game()");
         LGraph lastGraph = graph;

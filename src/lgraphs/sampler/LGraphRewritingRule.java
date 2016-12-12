@@ -10,6 +10,7 @@ import lgraphs.LGraph;
 import lgraphs.LGraphEdge;
 import lgraphs.LGraphNode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,14 +26,19 @@ public class LGraphRewritingRule {
     double decay;   // The decay with which the weight decreases after each application
     
     LGraph pattern;
-    LGraph result;
-    Map<LGraphNode, LGraphNode> map;    // mapping between the nodes of result to pattern
+    List<LGraph> negatedPatterns;
+    List<Map<LGraphNode, LGraphNode>> mapsFromNegatedPatterns;    // mapping between the nodes of negated patterns to pattern
+    
+    LGraph replacement;
+    Map<LGraphNode, LGraphNode> replacementMap;    // mapping between the nodes of replacement to pattern
     
     public LGraphRewritingRule(LGraph a_pattern, LGraph a_result, Map<LGraphNode, LGraphNode> a_map) {
         name = null;
         pattern = a_pattern;
-        result = a_result;
-        map = a_map;
+        negatedPatterns = null;
+        mapsFromNegatedPatterns = null;
+        replacement = a_result;
+        replacementMap = a_map;
     }
 
     public LGraphRewritingRule(String a_name, double a_weight, double a_decay, LGraph a_pattern, LGraph a_result, Map<LGraphNode, LGraphNode> a_map) {
@@ -40,10 +46,26 @@ public class LGraphRewritingRule {
         weight = a_weight;
         decay = a_decay;
         pattern = a_pattern;
-        result = a_result;
-        map = a_map;
+        negatedPatterns = null;
+        mapsFromNegatedPatterns = null;
+        replacement = a_result;
+        replacementMap = a_map;
     }
     
+
+    public LGraphRewritingRule(String a_name, double a_weight, double a_decay, LGraph a_pattern, 
+                               List<LGraph> a_negatedPatterns, List<Map<LGraphNode, LGraphNode>> a_mapsFromNegatedPatterns,
+                               LGraph a_replacement, Map<LGraphNode, LGraphNode> a_replacementMap) {
+        name = a_name;
+        weight = a_weight;
+        decay = a_decay;
+        pattern = a_pattern;
+        negatedPatterns = a_negatedPatterns;
+        mapsFromNegatedPatterns = a_mapsFromNegatedPatterns;
+        replacement = a_replacement;
+        replacementMap = a_replacementMap;
+    }
+
     public String getName() {
         return name;
     }
@@ -81,10 +103,10 @@ public class LGraphRewritingRule {
             }
         }
         
-        // Step 2: add all the nodes from result to the clone:
+        // Step 2: add all the nodes from replacement to the clone:
         Map<LGraphNode, LGraphNode> resultMap = new HashMap<LGraphNode, LGraphNode>();
-        for(LGraphNode nr:result.getNodes()) {
-            LGraphNode nodeClone = map.get(nr);
+        for(LGraphNode nr:replacement.getNodes()) {
+            LGraphNode nodeClone = replacementMap.get(nr);
             if (nodeClone==null) {
                 nodeClone = clone.addNode(nr.getLabels());
             } else {
@@ -94,8 +116,8 @@ public class LGraphRewritingRule {
             resultMap.put(nr, nodeClone);
         }
 
-        // Step 3: add all the edges from result to the clone:
-        for(LGraphNode nr:result.getNodes()) {
+        // Step 3: add all the edges from replacement to the clone:
+        for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = resultMap.get(nr);
             for(LGraphEdge edge:nr.getEdges()) {
                 clone.addEdge(nodeClone, edge.label, resultMap.get(edge.end));
@@ -104,5 +126,16 @@ public class LGraphRewritingRule {
         
         
         return clone;
+    }
+    
+    
+    public String toString() {
+        String tmp =  "RULE " + name + " " + weight + " " + decay + "\n" + 
+                      "    PATTERN " + pattern.toString() + "\n";
+        for(LGraph g:negatedPatterns) {
+            tmp +=    "    NEGATEDPATTERN " + g.toString() + "\n";
+        }
+        tmp +=        "    REPLACEMENT " + replacement.toString() + "\n";
+        return tmp;
     }
 }

@@ -41,10 +41,6 @@ public class LGraphMatcher {
             options[i] = new LinkedList<LGraphNode>();
             for(LGraphNode rn:reference.getNodes()) {
                 if (pn.subsumes(rn)) options[i].add(rn);
-                // negation:
-                if (pn.notLabel!=null) {
-                    if (!rn.subsumedBy(pn.notLabel)) options[i].add(rn);
-                }
             }
             if (options[i].isEmpty()) {
                 moreSolutions = false;

@@ -67,7 +67,7 @@ public class LGraphGrammarSampler {
             Integer count = ruleApplicationCounts.get(ruleName);
             if (count==null) count = 0;
             if (count>=ruleApplicationLimit.get(ruleName)) {
-                matcher.forbitRule(ruleName);
+                matcher.forbidRule(ruleName);
             }
         }        
         LGraph result = matcher.getNextResult();
@@ -89,7 +89,7 @@ public class LGraphGrammarSampler {
             Integer count = ruleApplicationCounts.get(ruleName);
             if (count==null) count = 0;
             if (count>=ruleApplicationLimit.get(ruleName)) {
-                matcher.forbitRule(ruleName);
+                matcher.forbidRule(ruleName);
             }
         }        
         LGraph result = null;
@@ -121,7 +121,7 @@ public class LGraphGrammarSampler {
             Integer count = ruleApplicationCounts.get(ruleName);
             if (count==null) count = 0;
             if (count>=ruleApplicationLimit.get(ruleName)) {
-                matcher.forbitRule(ruleName);
+                matcher.forbidRule(ruleName);
             }
         }        
         LGraph result = null;

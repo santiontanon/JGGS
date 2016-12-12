@@ -28,7 +28,7 @@ public class LGraphGrammarMatcher {
         matcher = null;
     }
     
-    public void forbitRule(String ruleName) {
+    public void forbidRule(String ruleName) {
         forbiddenRules.add(ruleName);
     }
     

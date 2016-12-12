@@ -6,6 +6,7 @@
 
 package lgraphs.sampler;
 
+import java.util.HashMap;
 import lgraphs.LGraphMatcher;
 import lgraphs.LGraph;
 import lgraphs.LGraphNode;
@@ -27,9 +28,35 @@ public class LGraphRuleMatcher {
     }
     
     public LGraph getNextResult() {
-        Map<LGraphNode, LGraphNode> map = matcher.nextMatch();
-        if (map==null) return null;        
-        return rule.applyRule(graph, map);
+        boolean negatedPatternMatches;
+        do{
+            Map<LGraphNode, LGraphNode> map = matcher.nextMatch();
+            if (map==null) return null; 
+
+            negatedPatternMatches = false;
+            for(int i = 0;i<rule.negatedPatterns.size();i++) {
+                LGraph negatedPattern = rule.negatedPatterns.get(i);
+                Map<LGraphNode, LGraphNode> map2 = new HashMap<LGraphNode, LGraphNode>();
+                for(LGraphNode n:negatedPattern.getNodes()) {
+                    LGraphNode originalPatternNode = rule.mapsFromNegatedPatterns.get(i).get(n);
+                    if (originalPatternNode!=null) {
+                        LGraphNode graphNode = map.get(originalPatternNode);
+                        map2.put(n,graphNode);
+                    }
+                }
+
+                LGraphMatcher matcher2 = new LGraphMatcher(negatedPattern, graph, map2);
+                Map<LGraphNode, LGraphNode> tmp_map = matcher2.nextMatch();
+                if (tmp_map!=null) {
+                    negatedPatternMatches = true;
+                    break;
+                }
+            }
+            if (!negatedPatternMatches) return rule.applyRule(graph, map);        
+        } while(negatedPatternMatches);
+        
+        // we should never get here
+        return null;
     }
     
 }
