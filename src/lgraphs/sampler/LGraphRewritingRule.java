@@ -80,7 +80,7 @@ public class LGraphRewritingRule {
                 LGraphNode nodeClone = cloneMap.get(matching.get(np));
                 LGraphEdge found = null;
                 for(LGraphEdge edgeClone:nodeClone.getEdges()) {
-                    if (ep.label.subsumes(edgeClone.label) &&
+                    if (ep.labels.subsumes(edgeClone.labels) &&
                         cloneMap.get(matching.get(ep.end))==edgeClone.end) {
                         found = edgeClone;
                         break;
@@ -105,13 +105,21 @@ public class LGraphRewritingRule {
         
         // Step 2: add all the nodes from replacement to the clone:
         Map<LGraphNode, LGraphNode> resultMap = new HashMap<LGraphNode, LGraphNode>();
+//        System.out.println("replacementMap size: " + replacementMap.size());
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = replacementMap.get(nr);
+//            System.out.println("    nr: " + nr);
+//            System.out.println("    nodeClone: " + nodeClone);
             if (nodeClone==null) {
-                nodeClone = clone.addNode(nr.getLabels());
+                nodeClone = clone.addNode(nr.getLabelSet());
             } else {
                 nodeClone = cloneMap.get(matching.get(nodeClone));
-                if (!nr.subsumes(nodeClone)) nodeClone.setLabels(nr.getLabels());
+                if (!nr.subsumes(nodeClone)) {
+//                    System.out.println("replacing " + nodeClone.getLabelSet() + " by " + nr.getLabelSet());
+                    nodeClone.setLabelSet(nr.getLabelSet());
+                } else {
+//                    System.out.println(nr.getLabelSet() + " subsumes " + nodeClone.getLabelSet());
+                }
             }      
             resultMap.put(nr, nodeClone);
         }
@@ -120,7 +128,7 @@ public class LGraphRewritingRule {
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = resultMap.get(nr);
             for(LGraphEdge edge:nr.getEdges()) {
-                clone.addEdge(nodeClone, edge.label, resultMap.get(edge.end));
+                clone.addEdge(nodeClone, edge.labels, resultMap.get(edge.end));
             }
         }        
         

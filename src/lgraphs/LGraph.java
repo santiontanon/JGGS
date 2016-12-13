@@ -25,7 +25,6 @@ public class LGraph {
         return fromString(string, new HashMap<String, LGraphNode>());
     }
 
-    
     /*
     Syntax:
         Graph:
@@ -41,9 +40,8 @@ public class LGraph {
     OK - multiple labels nodes
     OK - remove "not" in edges
     OK - add negated graphs
+    OK - multiple labels on edges
     - cardinality restrictions
-    - multiple labels on edges
-    
     */
     
     public static LGraph fromString(String string, Map<String, LGraphNode> nodes) throws Exception {        
@@ -65,34 +63,13 @@ public class LGraph {
                 while(string.charAt(idx)!='(') nodeLabel+=string.charAt(idx++);
                 idx++;
 
-                List<String> labelStrings = new ArrayList<String>();
-                if (nodeLabel.startsWith("{")) {
-                    StringTokenizer st = new StringTokenizer(nodeLabel,"{,}");
-                    while(st.hasMoreTokens()) labelStrings.add(st.nextToken());
+                node = nodes.get(nodeName);
+                LabelSet labelSet = LabelSet.fromString(nodeLabel);
+                if (node==null) {
+                    node = graph.addNode(labelSet);
+                    nodes.put(nodeName, node);
                 } else {
-                    labelStrings.add(nodeLabel);
-                }
-                
-                for(String labelString:labelStrings) {
-                    if (labelString.startsWith("~")) {
-                        labelString = labelString.substring(1);
-                        negation = true;
-                    }
-                    node = nodes.get(nodeName);
-                    if (node==null) {
-                        if (negation) {
-                            node = graph.addNotNode(Sort.getSort(labelString));
-                        } else {
-                            node = graph.addNode(Sort.getSort(labelString));
-                        }
-                        nodes.put(nodeName, node);
-                    } else {
-                        if (negation) {
-                            node.addNotLabel(Sort.getSort(labelString));
-                        } else {
-                            node.addLabel(Sort.getSort(labelString));
-                        }
-                    }
+                    node.addLabelSet(labelSet);
                 }
             }
 
@@ -106,15 +83,18 @@ public class LGraph {
                 String targetNodeName = "";
                 while(string.charAt(idx)!=':') edgeLabel+=string.charAt(idx++);
                 idx++;
+                
                 while(string.charAt(idx)!=',' && string.charAt(idx)!=')') targetNodeName+=string.charAt(idx++);
                 if (string.charAt(idx)==',') idx++;
+                
 //                System.out.println("Target node name: " + targetNodeName);
                 LGraphNode targetNode = nodes.get(targetNodeName);
+                LabelSet labelSet = LabelSet.fromString(edgeLabel);
                 if (targetNode==null) {
                     targetNode = graph.addNode(Sort.getSort("any"));
                     nodes.put(targetNodeName, targetNode);
                 }
-                node.addEdge(Sort.getSort(edgeLabel), targetNode);
+                node.addEdge(labelSet, targetNode);
             }while(true);
         }while(true);
 
@@ -141,17 +121,26 @@ public class LGraph {
         return n;
     }
 
+    public LGraphNode addNotNode(Sort l) {
+        LGraphNode n = new LGraphNode();
+        n.addNotLabel(l);
+        nodes.add(n);
+        return n;
+    }
+
+
+    public LGraphNode addNode(LabelSet l) {
+        LGraphNode n = new LGraphNode(l);
+        nodes.add(n);
+        return n;
+    }
+
     public LGraphNode addNode(Sort s1, Sort s2) {
         LGraphNode n = new LGraphNode(s1, s2);
         nodes.add(n);
         return n;
     }
-    public LGraphNode addNotNode(Sort l) {
-        LGraphNode n = LGraphNode.newNegaTiveLGraphNode(l);
-        nodes.add(n);
-        return n;
-    }
-
+    
     public LGraphNode addNode(List<Sort> l) {
         LGraphNode n = new LGraphNode(l);
         nodes.add(n);
@@ -162,6 +151,10 @@ public class LGraph {
         n1.addEdge(l,n2);
     }
 
+    public void addEdge(LGraphNode n1, LabelSet l, LGraphNode n2) {
+        n1.addEdge(l,n2);
+    }
+    
     public boolean subsumesWithMapping(LGraph reference, Map<LGraphNode, LGraphNode> map) {
         for(LGraphNode n:nodes) {
             LGraphNode rn = map.get(n);
@@ -169,7 +162,7 @@ public class LGraph {
             for(LGraphEdge e:n.edges) {
                 boolean found = false;
                 for(LGraphEdge re:rn.edges) {
-                    if (e.label.subsumes(re.label) &&
+                    if (e.labels.subsumes(re.labels) &&
                         re.end == map.get(e.end)) {
                         found = true;
                         break;
@@ -185,12 +178,12 @@ public class LGraph {
         LGraph clone = new LGraph();
 
         for(LGraphNode node:nodes)
-            clone.addNode(node.getLabels());
+            clone.addNode(node.getLabelSet());
 
         int idx = 0;
         for(LGraphNode node:nodes) {
             for(LGraphEdge edge:node.edges) {
-                clone.addEdge(clone.nodes.get(idx), edge.label, clone.nodes.get(nodes.indexOf(edge.end)));
+                clone.addEdge(clone.nodes.get(idx), edge.labels, clone.nodes.get(nodes.indexOf(edge.end)));
             }
             idx++;
         }
@@ -202,12 +195,12 @@ public class LGraph {
         LGraph clone = new LGraph();
 
         for(LGraphNode node:nodes) {
-            map.put(node, clone.addNode(node.getLabels()));
+            map.put(node, clone.addNode(node.getLabelSet()));
         }
 
         for(LGraphNode node:nodes) {
             for(LGraphEdge edge:node.edges) {
-                clone.addEdge(map.get(node), edge.label, map.get(edge.end));
+                clone.addEdge(map.get(node), edge.labels, map.get(edge.end));
             }
         }
 
@@ -226,14 +219,14 @@ public class LGraph {
                     break;
                 }
             }
-            if (consider) map.put(node, clone.addNode(node.getLabels()));
+            if (consider) map.put(node, clone.addNode(node.getLabelSet()));
         }
 
         for(LGraphNode node:nodes) {
             if (map.containsKey(node)) {
                 for(LGraphEdge edge:node.edges) {
                     if (map.containsKey(edge.end))
-                        clone.addEdge(map.get(node), edge.label, map.get(edge.end));
+                        clone.addEdge(map.get(node), edge.labels, map.get(edge.end));
                 }
             }
         }
@@ -343,7 +336,7 @@ public class LGraph {
             for(LGraphEdge edge:node.edges) {
                 if (!first3) tmp+=",";
                 first3 = false;
-                tmp+= edge.label + ":" + nodePrefix + nodes.indexOf(edge.end);
+                tmp+= edge.labels + ":" + nodePrefix + nodes.indexOf(edge.end);
             }
             tmp += ")";
         }

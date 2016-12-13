@@ -171,10 +171,10 @@ public class LGraphVisualizer extends Display {
                         Edge e = g.addEdge(n1, n2); // e columns: source, target, name
                         int edge = isMultiLine(g);
                         if (edge != -1) {
-                            g.getEdge(edge).set("name", g.getEdge(edge).get("name") + " // " + le.label.getName());
+                            g.getEdge(edge).set("name", g.getEdge(edge).get("name") + " // " + le.labels.toString());
                             g.removeEdge(e);
                         } else {
-                            e.set("name", le.label.getName());
+                            e.set("name", le.labels.toString());
                         }
                         
                     }

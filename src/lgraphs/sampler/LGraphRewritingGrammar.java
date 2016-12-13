@@ -96,6 +96,10 @@ public class LGraphRewritingGrammar {
                 Map<String, LGraphNode> replacementMap = new HashMap<String, LGraphNode>();
                 LGraph replacement = LGraph.fromString(replacementString, replacementMap);
                 Map<LGraphNode, LGraphNode> r2pmap = new HashMap<LGraphNode, LGraphNode>();
+                
+//                System.out.println("patternMap: " + patternMap.keySet());
+//                System.out.println("replacementMap: " + replacementMap.keySet());
+                
                 for(String nodeName:replacementMap.keySet()) {
                     if (patternMap.containsKey(nodeName)) {
                         r2pmap.put(replacementMap.get(nodeName), patternMap.get(nodeName));

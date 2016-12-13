@@ -13,13 +13,20 @@ import lgraphs.ontology.Sort;
  * @author santi
  */
 public class LGraphEdge {
-    public Sort label;
+    public LabelSet labels = new LabelSet();    
     public LGraphNode start;
     public LGraphNode end;
     
     public LGraphEdge(Sort a_label, LGraphNode a_start, LGraphNode a_end) {
-        label = a_label;
+        labels = new LabelSet(a_label);
         start = a_start;
         end = a_end;
     }
+
+    public LGraphEdge(LabelSet a_labels, LGraphNode a_start, LGraphNode a_end) {
+        labels = new LabelSet(a_labels);
+        start = a_start;
+        end = a_end;
+    }
+
 }
