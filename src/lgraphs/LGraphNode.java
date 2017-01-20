@@ -15,62 +15,64 @@ import java.util.List;
  * @author santi
  */
 public class LGraphNode {
-    protected LabelSet labels = new LabelSet();    
+    public LabelSet labelSet = new LabelSet();    
     protected List<LGraphEdge> edges = new ArrayList<LGraphEdge>();
     
     protected LGraphNode() {
     }
 
     public LGraphNode(LabelSet a_labels) {
-        labels = new LabelSet(a_labels);
+        labelSet = new LabelSet(a_labels);
     }
         
     public LGraphNode(Sort a_label) {
-        if (a_label==null) System.err.println("LGraphNode constructor called with null label");
-        labels.addLabel(a_label);
+        if (a_label==null) {
+            System.err.println("LGraphNode constructor called with null label");
+        }
+        labelSet.addLabel(a_label);
     }
 
     public LGraphNode(Sort a_label, Sort a_label2) {
         if (a_label==null) System.err.println("LGraphNode constructor2 called with null label (first)");
         if (a_label2==null) System.err.println("LGraphNode constructor2 called with null label (second)");
-        labels.addLabel(a_label);
-        labels.addLabel(a_label2);
+        labelSet.addLabel(a_label);
+        labelSet.addLabel(a_label2);
     }
 
     public LGraphNode(List<Sort> a_labels) {
         for(Sort l:a_labels) {
             if (l==null) System.err.println("LGraphNode constructor (list) called with null label");
-            labels.addLabel(l);
+            labelSet.addLabel(l);
         }
     }
     
     public LabelSet getLabelSet() {
-        return labels;
+        return labelSet;
     }
 
     public void setLabelSet(LabelSet ls) {
-        labels = new LabelSet(ls);
+        labelSet = new LabelSet(ls);
     }
 
 
     public void setLabel(Sort a_label) {
-        labels.setLabel(a_label);
+        labelSet.setLabel(a_label);
     }
 
     public void addLabel(Sort a_label) {
-        labels.addLabel(a_label);
+        labelSet.addLabel(a_label);
     }
     
     public void addLabelSet(LabelSet ls) {
-        labels.addLabelSet(ls);
+        labelSet.addLabelSet(ls);
     }
 
     public void addNotLabel(Sort a_label) {
-        labels.addNotLabel(a_label);
+        labelSet.addNotLabel(a_label);
     }
 
     public void setLabels(List<Sort> a_labels) {
-        labels.setLabels(a_labels);
+        labelSet.setLabels(a_labels);
     }
 
     public void addEdge(Sort edgeLabel, LGraphNode node) {
@@ -92,18 +94,35 @@ public class LGraphNode {
     
     public LGraphNode getFirstChild(Sort edgeLabel) {
         for(LGraphEdge e:edges) {
-            if (e.labels.subsumedBy(edgeLabel)) return e.end;
+            if (e.labelSet.subsumedBy(edgeLabel)) return e.end;
         }
         return null;
     }
+    
+    public LGraphNode getFirstChild(Sort edgeLabel, Sort endLabel) {
+        for(LGraphEdge e:edges) {
+            if (e.labelSet.subsumedBy(edgeLabel) && e.end.subsumes(endLabel)) return e.end;
+        }
+        return null;
+    }
+    
 
     public List<LGraphEdge> getChildren(Sort edgeLabel) {
         List<LGraphEdge> l = new ArrayList<LGraphEdge>();
         for(LGraphEdge e:edges) {
-            if (e.labels.subsumedBy(edgeLabel)) l.add(e);
+            if (e.labelSet.subsumedBy(edgeLabel)) l.add(e);
         }
         return l;
     }
+    
+    public List<LGraphEdge> getChildren(Sort edgeLabel, Sort endLabel) {
+        List<LGraphEdge> l = new ArrayList<LGraphEdge>();
+        for(LGraphEdge e:edges) {
+            if (e.labelSet.subsumedBy(edgeLabel) && e.end.subsumes(endLabel)) l.add(e);
+        }
+        return l;
+    }
+    
     
     public LGraphEdge getEdge(LGraphNode target) {
         for(LGraphEdge e:edges) {
@@ -125,15 +144,15 @@ public class LGraphNode {
     }
 
     public boolean subsumedBy(Sort s) {
-        return labels.subsumedBy(s);
+        return labelSet.subsumedBy(s);
     }
 
     public boolean subsumes(Sort s) {
-        return labels.subsumes(s);
+        return labelSet.subsumes(s);
     }
 
     public boolean subsumes(LGraphNode n) {
-        return labels.subsumes(n.labels);
+        return labelSet.subsumes(n.labelSet);
     }
 
     public String toString() {
@@ -141,6 +160,6 @@ public class LGraphNode {
     }
 
     public String toStringLabel() {
-        return labels.toString();
+        return labelSet.toString();
     }
 }

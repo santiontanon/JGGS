@@ -37,10 +37,10 @@ public class LGraph {
             {[~]String, ..., [~]String}
             
     Todo:
-    OK - multiple labels nodes
+    OK - multiple labelSet nodes
     OK - remove "not" in edges
     OK - add negated graphs
-    OK - multiple labels on edges
+    OK - multiple labelSet on edges
     - cardinality restrictions
     */
     
@@ -162,7 +162,7 @@ public class LGraph {
             for(LGraphEdge e:n.edges) {
                 boolean found = false;
                 for(LGraphEdge re:rn.edges) {
-                    if (e.labels.subsumes(re.labels) &&
+                    if (e.labelSet.subsumes(re.labelSet) &&
                         re.end == map.get(e.end)) {
                         found = true;
                         break;
@@ -183,7 +183,7 @@ public class LGraph {
         int idx = 0;
         for(LGraphNode node:nodes) {
             for(LGraphEdge edge:node.edges) {
-                clone.addEdge(clone.nodes.get(idx), edge.labels, clone.nodes.get(nodes.indexOf(edge.end)));
+                clone.addEdge(clone.nodes.get(idx), edge.labelSet, clone.nodes.get(nodes.indexOf(edge.end)));
             }
             idx++;
         }
@@ -200,7 +200,7 @@ public class LGraph {
 
         for(LGraphNode node:nodes) {
             for(LGraphEdge edge:node.edges) {
-                clone.addEdge(map.get(node), edge.labels, map.get(edge.end));
+                clone.addEdge(map.get(node), edge.labelSet, map.get(edge.end));
             }
         }
 
@@ -226,7 +226,7 @@ public class LGraph {
             if (map.containsKey(node)) {
                 for(LGraphEdge edge:node.edges) {
                     if (map.containsKey(edge.end))
-                        clone.addEdge(map.get(node), edge.labels, map.get(edge.end));
+                        clone.addEdge(map.get(node), edge.labelSet, map.get(edge.end));
                 }
             }
         }
@@ -336,7 +336,7 @@ public class LGraph {
             for(LGraphEdge edge:node.edges) {
                 if (!first3) tmp+=",";
                 first3 = false;
-                tmp+= edge.labels + ":" + nodePrefix + nodes.indexOf(edge.end);
+                tmp+= edge.labelSet + ":" + nodePrefix + nodes.indexOf(edge.end);
             }
             tmp += ")";
         }

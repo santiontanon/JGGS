@@ -151,7 +151,7 @@ public class LGraphVisualizer extends Display {
 		for (LGraphNode v : graph.getNodes()) g.addNode();
 		VisualGraph vg = m_vis.addGraph(GRAPH, g);
 
-		// Set labels for nodes
+		// Set labelSet for nodes
 		Iterator<?> i = vg.nodes();
 		for (LGraphNode v : graph.getNodes()) {
                     VisualItem vi = (VisualItem) i.next();
@@ -171,10 +171,10 @@ public class LGraphVisualizer extends Display {
                         Edge e = g.addEdge(n1, n2); // e columns: source, target, name
                         int edge = isMultiLine(g);
                         if (edge != -1) {
-                            g.getEdge(edge).set("name", g.getEdge(edge).get("name") + " // " + le.labels.toString());
+                            g.getEdge(edge).set("name", g.getEdge(edge).get("name") + " // " + le.labelSet.toString());
                             g.removeEdge(e);
                         } else {
-                            e.set("name", le.labels.toString());
+                            e.set("name", le.labelSet.toString());
                         }
                         
                     }

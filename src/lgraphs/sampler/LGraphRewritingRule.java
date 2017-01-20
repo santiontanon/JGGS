@@ -80,7 +80,7 @@ public class LGraphRewritingRule {
                 LGraphNode nodeClone = cloneMap.get(matching.get(np));
                 LGraphEdge found = null;
                 for(LGraphEdge edgeClone:nodeClone.getEdges()) {
-                    if (ep.labels.subsumes(edgeClone.labels) &&
+                    if (ep.labelSet.subsumes(edgeClone.labelSet) &&
                         cloneMap.get(matching.get(ep.end))==edgeClone.end) {
                         found = edgeClone;
                         break;
@@ -128,7 +128,7 @@ public class LGraphRewritingRule {
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = resultMap.get(nr);
             for(LGraphEdge edge:nr.getEdges()) {
-                clone.addEdge(nodeClone, edge.labels, resultMap.get(edge.end));
+                clone.addEdge(nodeClone, edge.labelSet, resultMap.get(edge.end));
             }
         }        
         

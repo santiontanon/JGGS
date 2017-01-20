@@ -55,7 +55,22 @@ public class LabelSet {
         labels.addAll(ls.labels);
         notLabels.addAll(ls.notLabels);
     }
+    
+    
+    public Sort getLabel() throws Exception 
+    {
+        if (notLabels.isEmpty() && labels.size()==1) return labels.get(0);
+        throw new Exception("LabelSet does not contain a single label!");
+    }
 
+
+    public List<Sort> getLabels() throws Exception 
+    {
+        if (notLabels.isEmpty()) return labels;
+        throw new Exception("LabelSet contains some notLabels!!");
+    }
+
+    
     public void setLabel(Sort a_label) {
         if (a_label == null) {
             System.err.println("LGraphNode.setLabel called with null label");
