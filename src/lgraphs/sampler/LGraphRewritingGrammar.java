@@ -57,8 +57,9 @@ public class LGraphRewritingGrammar {
                 String replacementString = null;
                 
                 while(true) {
-                    String line2 = br.readLine().trim();
+                    String line2 = br.readLine();
                     if (line2==null) throw new Exception("End of file reached before a \"REPLACEMENT\" token was found");
+                    line2 = line2.trim();
                     if (line2.startsWith("PATTERN")) {
                         if (patternString != null) throw new Exception("More than one \"PATTERN\" tag found in rule!");
                         patternString = line2.substring(7).trim();
