@@ -28,9 +28,11 @@ public class LGraphGrammarMatcher {
         matcher = null;
     }
     
+    
     public void forbidRule(String ruleName) {
         forbiddenRules.add(ruleName);
     }
+    
     
     public LGraph getNextResult() {
         if (currentRule>=grammar.rules.size()) return null;

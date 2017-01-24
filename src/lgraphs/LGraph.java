@@ -28,8 +28,8 @@ public class LGraph {
     /*
     Syntax:
         Graph:
-            NAME:LABEL(LABEL:NAME, ..., LABEL:NAME), ...
-            NAME:LABEL(LABEL[[min]-[max]] ... ), ...
+            NAME:LABEL(LABEL[*]:NAME, ..., LABEL[*]:NAME), ...
+            NAME:LABEL(LABEL[[min]-[max]][*] ... ), ...
         NAME:
             String
         LABEL:
@@ -37,10 +37,11 @@ public class LGraph {
             {[~]String, ..., [~]String}
             
     Todo:
-    OK - multiple labelSet nodes
+    OK - multiple labels nodes
     OK - remove "not" in edges
     OK - add negated graphs
-    OK - multiple labelSet on edges
+    OK - multiple labels on edges
+    - transitive edges in patterns
     - cardinality restrictions
     */
     
@@ -155,6 +156,7 @@ public class LGraph {
         n1.addEdge(l,n2);
     }
     
+    
     public boolean subsumesWithMapping(LGraph reference, Map<LGraphNode, LGraphNode> map) {
         for(LGraphNode n:nodes) {
             LGraphNode rn = map.get(n);
@@ -173,6 +175,19 @@ public class LGraph {
         }
         return true;
     }
+    
+    
+    public boolean equivalent(LGraph g)
+    {
+        LGraphMatcher m1 = new LGraphMatcher(this, g);
+        if (m1.nextMatch()!=null) {        
+            LGraphMatcher m2 = new LGraphMatcher(g, this);
+            if (m2.nextMatch()!=null) return true;
+        }
+        
+        return false;
+    }
+    
 
     public LGraph clone() {
         LGraph clone = new LGraph();

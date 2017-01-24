@@ -38,9 +38,22 @@ public class LGraphGrammarSampler {
         }
     }
     
+
+    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, long randomSeed) {
+        currentGraph = a_graph;
+        grammar = a_grammar;
+        r = new Random(randomSeed);
+        for(LGraphRewritingRule rule:grammar.rules) {
+            currentRuleWeights.put(rule.getName(), rule.weight);
+            currentRuleDecay.put(rule.getName(), rule.decay);
+        }
+    }
+
+    
     public void addApplicationLimit(String ruleName, int limit) {
         ruleApplicationLimit.put(ruleName, limit);
     }
+    
     
     public void printRuleApplicationCounts() {
         System.out.println("Rule application summary:");
@@ -48,6 +61,7 @@ public class LGraphGrammarSampler {
             System.out.println("  " + rule + ": " + ruleApplicationCounts.get(rule));
         }
     }
+    
     
     protected void addRuleApplication(String name) {
         Integer count = ruleApplicationCounts.get(name);
@@ -57,6 +71,7 @@ public class LGraphGrammarSampler {
             ruleApplicationCounts.put(name, ruleApplicationCounts.get(name)+1);
         }
     }
+    
     
     // Applies the first rule that can be applied:
     // Does not update weights
