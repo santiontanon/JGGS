@@ -81,13 +81,13 @@ public class LGraphRewritingRule {
         LGraph clone = graph.clone(cloneMap);
         
         // Step 1: remove all the edges from the pattern in the clone:
-        for(LGraphNode np:pattern.getNodes()) {
-            for(LGraphEdge ep:np.getEdges()) {
-                LGraphNode nodeClone = cloneMap.get(matching.get(np));
+        for(LGraphNode patternNode:pattern.getNodes()) {
+            for(LGraphEdge patternEdge:patternNode.getEdges()) {
+                LGraphNode nodeClone = cloneMap.get(matching.get(patternNode));
                 LGraphEdge found = null;
                 for(LGraphEdge edgeClone:nodeClone.getEdges()) {
-                    if (ep.labelSet.subsumes(edgeClone.labelSet) &&
-                        cloneMap.get(matching.get(ep.end))==edgeClone.end) {
+                    if (patternEdge.labelSet.subsumes(edgeClone.labelSet) &&
+                        cloneMap.get(matching.get(patternEdge.end))==edgeClone.end) {
                         found = edgeClone;
                         break;
                     }
