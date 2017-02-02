@@ -11,6 +11,7 @@ import lgraphs.LGraphNode;
 import lgraphs.ontology.Sort;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,15 +34,36 @@ public class LGraphRewritingGrammar {
     public void addRule(LGraphRewritingRule rule) {
         rules.add(rule);
     }
-    
-    
+
+    private static String readFullLine(BufferedReader br) throws IOException {
+        //return br.readLine();
+        String line_complete = null;
+        boolean line_finished;
+        do {
+            String line = br.readLine();
+            if (line == null) {
+                break;
+            }
+            if(line_complete==null){
+                line_complete = "";
+            }
+            line_complete += line.trim();
+            if (line_complete.endsWith("\\")) {
+                line_finished = false;
+                line_complete = line_complete.substring(0, line_complete.length() - 1);
+            } else {
+                line_finished = true;
+            }
+        } while (!line_finished);
+        return line_complete;
+    }
     public static LGraphRewritingGrammar load(String fileName) throws Exception {
         LGraphRewritingGrammar grammar = new LGraphRewritingGrammar();
         
         BufferedReader br = new BufferedReader(new FileReader(fileName));
         
         do{
-            String line = br.readLine();
+            String line = readFullLine(br);
             if (line==null) break;
             StringTokenizer st = new StringTokenizer(line," ");
             if (!st.hasMoreTokens()) continue;
@@ -51,14 +73,23 @@ public class LGraphRewritingGrammar {
                 String ruleName = st.nextToken();
                 double weight = Double.parseDouble(st.nextToken());
                 double decay = Double.parseDouble(st.nextToken());
+                int applicationLimit = -1;
+                if (st.hasMoreTokens()){
+                    applicationLimit = Integer.parseInt(st.nextToken());
+                }
+                String topic = null;
+                if (st.hasMoreTokens()){
+                    topic = st.nextToken();
+                }
                 
                 String patternString = null;
                 List<String> negatedPatternStrings = new ArrayList<String>();
                 String replacementString = null;
                 
                 while(true) {
-                    String line2 = br.readLine().trim();
+                    String line2 = readFullLine(br);
                     if (line2==null) throw new Exception("End of file reached before a \"REPLACEMENT\" token was found");
+                    line2 = line2.trim();
                     if (line2.startsWith("PATTERN")) {
                         if (patternString != null) throw new Exception("More than one \"PATTERN\" tag found in rule!");
                         patternString = line2.substring(7).trim();
@@ -105,7 +136,7 @@ public class LGraphRewritingGrammar {
                         r2pmap.put(replacementMap.get(nodeName), patternMap.get(nodeName));
                     }
                 }
-                grammar.addRule(new LGraphRewritingRule(ruleName, weight, decay, pattern, negatedPatterns, negatedPatternMaps, replacement, r2pmap));
+                grammar.addRule(new LGraphRewritingRule(ruleName, weight, decay, pattern, negatedPatterns, negatedPatternMaps, replacement, r2pmap, applicationLimit, topic));
             } else {
                 throw new Exception("Expected token \"RULE\", but found \"" + token + "\"");
             }

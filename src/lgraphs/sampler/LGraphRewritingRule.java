@@ -18,12 +18,14 @@ import java.util.Map;
  * @author santi
  */
 public class LGraphRewritingRule {
-    String name;    // rules can have a name, with the purposes ot informing the user
-                    // which rules were fired.
-    double weight;  // If the generation algorithm is stochastic, use this weight to 
-                    // compute the probability of firing this rule versus other rules
-                    // The probability will be "weight/sum of weights"
-    double decay;   // The decay with which the weight decreases after each application
+    String name;            // rules can have a name, with the purposes ot informing the user
+                            // which rules were fired.
+    double weight;          // If the generation algorithm is stochastic, use this weight to 
+                            // compute the probability of firing this rule versus other rules
+                            // The probability will be "weight/sum of weights"
+    double decay;           // The decay with which the weight decreases after each application
+    int applicationLimit;   // Optional ruleApplicationLimit from grammar file, -1 for no limit
+    String topic;           // Optional string to group the rules
     
     LGraph pattern;
     List<LGraph> negatedPatterns;
@@ -50,12 +52,14 @@ public class LGraphRewritingRule {
         mapsFromNegatedPatterns = null;
         replacement = a_result;
         replacementMap = a_map;
+        applicationLimit = -1;
+        topic = null;
     }
     
 
     public LGraphRewritingRule(String a_name, double a_weight, double a_decay, LGraph a_pattern, 
                                List<LGraph> a_negatedPatterns, List<Map<LGraphNode, LGraphNode>> a_mapsFromNegatedPatterns,
-                               LGraph a_replacement, Map<LGraphNode, LGraphNode> a_replacementMap) {
+                               LGraph a_replacement, Map<LGraphNode, LGraphNode> a_replacementMap, int a_applicationLimit, String a_topic) {
         name = a_name;
         weight = a_weight;
         decay = a_decay;
@@ -64,6 +68,8 @@ public class LGraphRewritingRule {
         mapsFromNegatedPatterns = a_mapsFromNegatedPatterns;
         replacement = a_replacement;
         replacementMap = a_replacementMap;
+        applicationLimit = a_applicationLimit;
+        topic = a_topic;
     }
 
     public String getName() {
