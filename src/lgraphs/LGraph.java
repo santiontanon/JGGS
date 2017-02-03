@@ -8,10 +8,9 @@ package lgraphs;
 
 import lgraphs.ontology.Sort;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 /**
  *
@@ -19,10 +18,12 @@ import java.util.StringTokenizer;
  * 
  */
 public class LGraph {
+    public static int DEBUG = 0;
+    
     List<LGraphNode> nodes = new ArrayList<LGraphNode>();
 
     public static LGraph fromString(String string) throws Exception {
-        return fromString(string, new HashMap<String, LGraphNode>());
+        return fromString(string, new LinkedHashMap<String, LGraphNode>());
     }
 
     /*
@@ -49,13 +50,15 @@ public class LGraph {
         LGraph graph = new LGraph();
         int idx = 0;
         int l = string.length();
+        
+        if (DEBUG>=1) System.out.println("LGraph::fromString `" + string + "'");
+        
         do{
             // get node:
             if (idx>=l) break;
             while(string.charAt(idx)==',' || string.charAt(idx)==' ') idx++;
             LGraphNode node = null;
             {
-                boolean negation = false;
                 String nodeName = "";
                 String nodeLabel = "";
                 while(string.charAt(idx)!=':') nodeName+=string.charAt(idx++);
@@ -66,11 +69,23 @@ public class LGraph {
 
                 node = nodes.get(nodeName);
                 LabelSet labelSet = LabelSet.fromString(nodeLabel);
+                
+                if (DEBUG>=1) {
+                    System.out.println("LGraph::fromString: nodeLabel: `" + nodeLabel + "'");
+                    System.out.println("LGraph::fromString: labelSet: " + labelSet);
+                }
+                
                 if (node==null) {
                     node = graph.addNode(labelSet);
                     nodes.put(nodeName, node);
+                    if (DEBUG>=1) System.out.println("LGraph::fromString: adding node: `" + nodeName + "'");
                 } else {
+                    if (DEBUG>=1) {
+                        System.out.println("LGraph::fromString: node `"+nodeName+"' already defined, just adding the labelset...");
+                        System.out.println("LGraph::fromString: labelSet before: " + node.getLabelSet());
+                    }
                     node.addLabelSet(labelSet);
+                    if (DEBUG>=1) System.out.println("LGraph::fromString: labelSet after: " + node.getLabelSet());
                 }
             }
 
@@ -91,6 +106,12 @@ public class LGraph {
 //                System.out.println("Target node name: " + targetNodeName);
                 LGraphNode targetNode = nodes.get(targetNodeName);
                 LabelSet labelSet = LabelSet.fromString(edgeLabel);
+                
+                if (DEBUG>=1) {
+                    System.out.println("LGraph::fromString: edgeLabel: `" + edgeLabel + "'");
+                    System.out.println("LGraph::fromString: labelSet: " + labelSet);
+                }
+                
                 if (targetNode==null) {
                     targetNode = graph.addNode(Sort.getSort("any"));
                     nodes.put(targetNodeName, targetNode);
@@ -186,6 +207,19 @@ public class LGraph {
         }
         
         return false;
+    }
+    
+    
+    public void removeNodeAndAllConnections(LGraphNode n)
+    {
+        nodes.remove(n);
+        for(LGraphNode n2:nodes) {
+            ArrayList<LGraphEdge> toRemove = new ArrayList<LGraphEdge>();
+            for(LGraphEdge e:n2.edges) {
+                if (e.end == n) toRemove.add(e);
+            }
+            n2.edges.removeAll(toRemove);
+        }
     }
     
 

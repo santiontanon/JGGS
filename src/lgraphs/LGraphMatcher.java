@@ -6,7 +6,7 @@
 
 package lgraphs;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +123,7 @@ public class LGraphMatcher {
     }
     
     public Map<LGraphNode, LGraphNode> mappingFromStatus() {
-        Map<LGraphNode, LGraphNode> map = new HashMap<LGraphNode, LGraphNode>();
+        Map<LGraphNode, LGraphNode> map = new LinkedHashMap<LGraphNode, LGraphNode>();
         for(int i = 0;i<m;i++) {
             map.put(pattern.getNodes().get(i), options[i].get(status[i]));
         }

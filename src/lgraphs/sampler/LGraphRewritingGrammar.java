@@ -8,12 +8,11 @@ package lgraphs.sampler;
 
 import lgraphs.LGraph;
 import lgraphs.LGraphNode;
-import lgraphs.ontology.Sort;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +56,8 @@ public class LGraphRewritingGrammar {
         } while (!line_finished);
         return line_complete;
     }
+    
+    
     public static LGraphRewritingGrammar load(String fileName) throws Exception {
         LGraphRewritingGrammar grammar = new LGraphRewritingGrammar();
         
@@ -104,17 +105,17 @@ public class LGraphRewritingGrammar {
                 if (patternString==null) throw new Exception("End of file reached before a \"PATTERN\" token was found");
                 
                 // load the pattern:
-                Map<String, LGraphNode> patternMap = new HashMap<String, LGraphNode>();                
+                Map<String, LGraphNode> patternMap = new LinkedHashMap<String, LGraphNode>();                
                 LGraph pattern = LGraph.fromString(patternString, patternMap);
                 
                 // load the negated patterns:
                 List<LGraph> negatedPatterns = new ArrayList<LGraph>();                
                 List<Map<LGraphNode, LGraphNode>> negatedPatternMaps = new ArrayList<Map<LGraphNode, LGraphNode>>();
                 for(String negatedPatternString:negatedPatternStrings) {
-                    Map<String, LGraphNode> negatedPatternMap = new HashMap<String, LGraphNode>();
+                    Map<String, LGraphNode> negatedPatternMap = new LinkedHashMap<String, LGraphNode>();
                     LGraph negatedPattern = LGraph.fromString(negatedPatternString, negatedPatternMap);
                     negatedPatterns.add(negatedPattern);
-                    Map<LGraphNode, LGraphNode> np2pmap = new HashMap<LGraphNode, LGraphNode>();
+                    Map<LGraphNode, LGraphNode> np2pmap = new LinkedHashMap<LGraphNode, LGraphNode>();
                     for(String nodeName:negatedPatternMap.keySet()) {
                         if (patternMap.containsKey(nodeName)) {
                             np2pmap.put(negatedPatternMap.get(nodeName), patternMap.get(nodeName));
@@ -124,9 +125,9 @@ public class LGraphRewritingGrammar {
                 }
                 
                 // load the replacement:
-                Map<String, LGraphNode> replacementMap = new HashMap<String, LGraphNode>();
+                Map<String, LGraphNode> replacementMap = new LinkedHashMap<String, LGraphNode>();
                 LGraph replacement = LGraph.fromString(replacementString, replacementMap);
-                Map<LGraphNode, LGraphNode> r2pmap = new HashMap<LGraphNode, LGraphNode>();
+                Map<LGraphNode, LGraphNode> r2pmap = new LinkedHashMap<LGraphNode, LGraphNode>();
                 
 //                System.out.println("patternMap: " + patternMap.keySet());
 //                System.out.println("replacementMap: " + replacementMap.keySet());

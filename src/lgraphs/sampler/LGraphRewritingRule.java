@@ -6,10 +6,11 @@
 
 package lgraphs.sampler;
 
+import java.util.ArrayList;
 import lgraphs.LGraph;
 import lgraphs.LGraphEdge;
 import lgraphs.LGraphNode;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class LGraphRewritingRule {
     
     LGraph replacement;
     Map<LGraphNode, LGraphNode> replacementMap;    // mapping between the nodes of replacement to pattern
+    List<LGraphNode> nodesInPatternAndNotInReplacement;
     
     public LGraphRewritingRule(LGraph a_pattern, LGraph a_result, Map<LGraphNode, LGraphNode> a_map) {
         name = null;
@@ -54,6 +56,18 @@ public class LGraphRewritingRule {
         replacementMap = a_map;
         applicationLimit = -1;
         topic = null;
+        
+        nodesInPatternAndNotInReplacement = new ArrayList<LGraphNode>();
+        for(LGraphNode n:pattern.getNodes()) {
+            LGraphNode found = null;
+            for(LGraphNode n2:replacement.getNodes()) {
+                if (replacementMap.get(n2)==n) {
+                    found = n2;
+                    break;
+                }
+            }
+            if (found==null) nodesInPatternAndNotInReplacement.add(n);
+        }
     }
     
 
@@ -70,20 +84,35 @@ public class LGraphRewritingRule {
         replacementMap = a_replacementMap;
         applicationLimit = a_applicationLimit;
         topic = a_topic;
+
+        nodesInPatternAndNotInReplacement = new ArrayList<LGraphNode>();
+        for(LGraphNode n:pattern.getNodes()) {
+            LGraphNode found = null;
+            for(LGraphNode n2:replacement.getNodes()) {
+                if (replacementMap.get(n2)==n) {
+                    found = n2;
+                    break;
+                }
+            }
+            if (found==null) nodesInPatternAndNotInReplacement.add(n);
+        }
     }
 
+    
     public String getName() {
         return name;
     }
     
+    
     public LGraph applyRule(LGraph graph, Map<LGraphNode, LGraphNode> matching) {
-        Map<LGraphNode, LGraphNode> cloneMap = new HashMap<LGraphNode, LGraphNode>();
+        Map<LGraphNode, LGraphNode> cloneMap = new LinkedHashMap<LGraphNode, LGraphNode>();
         LGraph clone = graph.clone(cloneMap);
         
         // Step 1: remove all the edges from the pattern in the clone:
+        List<LGraphEdge> edgesToRemove = new ArrayList<LGraphEdge>();
         for(LGraphNode patternNode:pattern.getNodes()) {
+            LGraphNode nodeClone = cloneMap.get(matching.get(patternNode));
             for(LGraphEdge patternEdge:patternNode.getEdges()) {
-                LGraphNode nodeClone = cloneMap.get(matching.get(patternNode));
                 LGraphEdge found = null;
                 for(LGraphEdge edgeClone:nodeClone.getEdges()) {
                     if (patternEdge.labelSet.subsumes(edgeClone.labelSet) &&
@@ -94,7 +123,8 @@ public class LGraphRewritingRule {
                 }
                 if (found==null) {
                     System.out.flush();
-                    System.err.println("LGraphRewritingRule.applyRule: matching edge not found!!");
+                    System.err.println("LGraphRewritingRule.applyRule: matching edge for N"+pattern.getNodes().indexOf(patternEdge.start)+
+                                       "->N"+pattern.getNodes().indexOf(patternEdge.end)+" not found!!");
                     System.err.println("Pattern:");
                     System.err.println("  " + pattern);
                     System.err.println("Graph:");
@@ -105,12 +135,15 @@ public class LGraphRewritingRule {
                     }
                     throw new Error("matching edge not found!");
                 }
-                nodeClone.getEdges().remove(found);
+                edgesToRemove.add(found);
             }
+        }
+        for(LGraphEdge e:edgesToRemove) {
+            e.start.getEdges().removeAll(edgesToRemove);
         }
         
         // Step 2: add all the nodes from replacement to the clone:
-        Map<LGraphNode, LGraphNode> resultMap = new HashMap<LGraphNode, LGraphNode>();
+        Map<LGraphNode, LGraphNode> resultMap = new LinkedHashMap<LGraphNode, LGraphNode>();
 //        System.out.println("replacementMap size: " + replacementMap.size());
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = replacementMap.get(nr);
@@ -129,8 +162,39 @@ public class LGraphRewritingRule {
             }      
             resultMap.put(nr, nodeClone);
         }
+        
+        // Step 3: remove nodes that are in the pattern, but not in the replacement 
+        // (Except if they have links to nodes outside of the nodes matched by the pattern):
+        List<LGraphNode> image = new ArrayList<LGraphNode>();
+        image.addAll(matching.values());
+        for(LGraphNode n:nodesInPatternAndNotInReplacement) {
+            boolean remove = true;
+            LGraphNode toRemove = matching.get(n);
+            for(LGraphEdge e:toRemove.getEdges()) {
+                if (!image.contains(e.end)) {
+                    // the node has an edge to outside of the image:
+                    remove = false;
+                    break;
+                }
+            }
+            
+            for(LGraphNode n2:graph.getNodes()) {
+                if (image.contains(n2)) continue;
+                for(LGraphEdge e:n2.getEdges()) {
+                    if (e.end == toRemove) {
+                        // the node has an incoming edge from outside of the image:
+                        remove = false;
+                        break;
+                    }
+                }
+            }
+            
+            if (remove) {
+                clone.removeNodeAndAllConnections(cloneMap.get(matching.get(n)));
+            }
+        }
 
-        // Step 3: add all the edges from replacement to the clone:
+        // Step 4: add all the edges from replacement to the clone:
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = resultMap.get(nr);
             for(LGraphEdge edge:nr.getEdges()) {

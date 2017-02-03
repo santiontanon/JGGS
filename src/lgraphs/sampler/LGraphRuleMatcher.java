@@ -6,7 +6,7 @@
 
 package lgraphs.sampler;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import lgraphs.LGraphMatcher;
 import lgraphs.LGraph;
 import lgraphs.LGraphNode;
@@ -36,7 +36,7 @@ public class LGraphRuleMatcher {
             negatedPatternMatches = false;
             for(int i = 0;i<rule.negatedPatterns.size();i++) {
                 LGraph negatedPattern = rule.negatedPatterns.get(i);
-                Map<LGraphNode, LGraphNode> map2 = new HashMap<LGraphNode, LGraphNode>();
+                Map<LGraphNode, LGraphNode> map2 = new LinkedHashMap<LGraphNode, LGraphNode>();
                 for(LGraphNode n:negatedPattern.getNodes()) {
                     LGraphNode originalPatternNode = rule.mapsFromNegatedPatterns.get(i).get(n);
                     if (originalPatternNode!=null) {
