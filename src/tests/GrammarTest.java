@@ -16,10 +16,10 @@ import lgraphs.sampler.LGraphRewritingGrammar;
  * @author santi
  */
 public class GrammarTest {
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) throws Exception {       
         Ontology ontology = new Ontology("data/sampleOntology.xml");
         LGraphRewritingGrammar grammar = LGraphRewritingGrammar.load("data/sampleGrammar.txt");
-        
+
         System.out.println(grammar);
         
         // Create an initial graph:

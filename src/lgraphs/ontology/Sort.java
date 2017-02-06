@@ -7,6 +7,7 @@
 package lgraphs.ontology;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class Sort {
     
-    static HashMap<String, Sort> table = new HashMap<String, Sort>();
+    static HashMap<String, Sort> table = new LinkedHashMap<String, Sort>();
     static {
         try {
             Sort.newSort("any");
@@ -28,6 +29,18 @@ public class Sort {
     String name;
     List<Sort> parents = new LinkedList<Sort>();
     List<Sort> children = new LinkedList<Sort>();
+    
+    
+    public static void clearSorts()
+    {
+        table.clear();
+        try {
+            Sort.newSort("any");
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     
     public static Sort getOrNewSort(String a_name) throws Exception {
         Sort l = table.get(a_name);

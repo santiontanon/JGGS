@@ -8,6 +8,7 @@ package lgraphs.sampler;
 
 import lgraphs.LGraph;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -22,11 +23,11 @@ public class LGraphGrammarSampler {
     LGraph currentGraph;
     Random r;
     
-    HashMap<String,Integer> ruleApplicationCounts = new HashMap<String,Integer>();
-    HashMap<String,Double> currentRuleWeights = new HashMap<String,Double>();
-    HashMap<String,Double> currentRuleDecay = new HashMap<String,Double>();
+    HashMap<String,Integer> ruleApplicationCounts = new LinkedHashMap<String,Integer>();
+    HashMap<String,Double> currentRuleWeights = new LinkedHashMap<String,Double>();
+    HashMap<String,Double> currentRuleDecay = new LinkedHashMap<String,Double>();
     
-    HashMap<String,Integer> ruleApplicationLimit = new HashMap<String,Integer>();
+    HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
         currentGraph = a_graph;
