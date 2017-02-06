@@ -30,23 +30,24 @@ public class LGraphGrammarSampler {
     HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
-        currentGraph = a_graph;
-        grammar = a_grammar;
-        r = new Random();
-        for(LGraphRewritingRule rule:grammar.rules) {
-            currentRuleWeights.put(rule.getName(), rule.weight);
-            currentRuleDecay.put(rule.getName(), rule.decay);
-        }
+        this(a_graph, a_grammar, -1);
     }
     
 
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, long randomSeed) {
         currentGraph = a_graph;
         grammar = a_grammar;
-        r = new Random(randomSeed);
+        if(randomSeed>-1){
+            r = new Random(randomSeed);
+        } else {
+            r = new Random();
+        }
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);
             currentRuleDecay.put(rule.getName(), rule.decay);
+            if(rule.applicationLimit>-1){
+                ruleApplicationLimit.put(rule.name, rule.applicationLimit);
+            }
         }
     }
 
