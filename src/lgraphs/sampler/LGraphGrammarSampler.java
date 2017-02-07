@@ -22,6 +22,7 @@ public class LGraphGrammarSampler {
     LGraphRewritingGrammar grammar;
     LGraph currentGraph;
     Random r;
+    Sampler s;
     
     HashMap<String,Integer> ruleApplicationCounts = new LinkedHashMap<String,Integer>();
     HashMap<String,Double> currentRuleWeights = new LinkedHashMap<String,Double>();
@@ -33,6 +34,7 @@ public class LGraphGrammarSampler {
         currentGraph = a_graph;
         grammar = a_grammar;
         r = new Random();
+        s = new Sampler(r);
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);
             currentRuleDecay.put(rule.getName(), rule.decay);
@@ -44,6 +46,7 @@ public class LGraphGrammarSampler {
         currentGraph = a_graph;
         grammar = a_grammar;
         r = new Random(randomSeed);
+        s = new Sampler(r);
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);
             currentRuleDecay.put(rule.getName(), rule.decay);
@@ -164,7 +167,7 @@ public class LGraphGrammarSampler {
         }            
 //        System.out.println(differentRuleNames);
 //        System.out.println(ruleWeights);
-        int selected = Sampler.weighted(probabilities);
+        int selected = s.weighted(probabilities);
         String selectedRuleName = differentRuleNames.get(selected);
         
         List<LGraph> filteredResults = new LinkedList<LGraph>();

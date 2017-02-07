@@ -13,19 +13,36 @@ import java.util.List;
 import java.util.Random;
 
 public class Sampler {
+    public Random r = null;
+    
+    public Sampler() {
+        r = new Random();
+    }
+    
+    
+    public Sampler(long randomSeed)
+    {
+        r = new Random(randomSeed);
+    }
 
+    
+    public Sampler(Random a_r)
+    {
+        r = a_r;
+    }
+
+    
     /*
      * Returns a random element in the distribution
      */
-    public static int random(double []distribution) {
-        Random generator = new Random();
-        return generator.nextInt(distribution.length);
+    public int random(double []distribution) {
+        return r.nextInt(distribution.length);
     }
 
     /*
      * Returns the element with maximum probability (ties are resolved randomly)
      */
-    public static int max(double []distribution) throws Exception {
+    public int max(double []distribution) throws Exception {
         List<Integer> best = new LinkedList<Integer>();
         double max = distribution[0];
 
@@ -43,8 +60,7 @@ public class Sampler {
         }
 
         if (best.size() > 0) {
-            Random generator = new Random();
-            return best.get(generator.nextInt(best.size()));
+            return best.get(r.nextInt(best.size()));
         }
 
         throw new Exception("Input distribution empty in Sampler.max!");
@@ -77,15 +93,14 @@ public class Sampler {
     /*
      * Returns an element in the distribution, using the weights as their relative probabilities
      */
-    public static int weighted(double []distribution) throws Exception {
-        Random generator = new Random();
+    public int weighted(double []distribution) throws Exception {
         double total = 0, accum = 0, tmp;
 
         for (double f : distribution) {
             total += f;
         }
 
-        tmp = generator.nextDouble() * total;
+        tmp = r.nextDouble() * total;
         for (int i = 0; i < distribution.length; i++) {
             accum += distribution[i];
             if (accum >= tmp) {
@@ -100,15 +115,14 @@ public class Sampler {
     /*
      * Returns an element in the distribution, using the weights as their relative probabilities
      */
-    public static int weighted(List<Double> distribution) throws Exception {
-        Random generator = new Random();
+    public int weighted(List<Double> distribution) throws Exception {
         double total = 0, accum = 0, tmp;
 
         for (double f : distribution) {
             total += f;
         }
 
-        tmp = generator.nextDouble() * total;
+        tmp = r.nextDouble() * total;
         int i = 0;
         for (double f : distribution) {
             accum += f;
@@ -129,7 +143,7 @@ public class Sampler {
      * If "e" = 0.5, then it has the same effect as the "weighted" method
      * If "e" = 0, then it has the same effect as the "random" method
      */
-    public static int explorationWeighted(double []distribution, double e) throws Exception {
+    public int explorationWeighted(double []distribution, double e) throws Exception {
         /*
          * exponent = 1/(1-e)-1
          */
