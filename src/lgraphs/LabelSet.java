@@ -37,7 +37,9 @@ public class LabelSet {
                 labelString = labelString.substring(1);
                 ls.notLabels.add(Sort.getSort(labelString));
             } else {
-                ls.labels.add(Sort.getSort(labelString));
+                Sort s = Sort.getSort(labelString);
+                if (s == null) System.err.println("null sort for `" + labelString + "'");
+                ls.labels.add(s);
             }
         }
         

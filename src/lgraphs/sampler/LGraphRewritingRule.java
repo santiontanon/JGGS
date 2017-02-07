@@ -19,6 +19,7 @@ import java.util.Map;
  * @author santi
  */
 public class LGraphRewritingRule {
+    public static int DEBUG = 0;
     String name;            // rules can have a name, with the purposes ot informing the user
                             // which rules were fired.
     double weight;          // If the generation algorithm is stochastic, use this weight to 
@@ -107,6 +108,8 @@ public class LGraphRewritingRule {
     public LGraph applyRule(LGraph graph, Map<LGraphNode, LGraphNode> matching) {
         Map<LGraphNode, LGraphNode> cloneMap = new LinkedHashMap<LGraphNode, LGraphNode>();
         LGraph clone = graph.clone(cloneMap);
+
+        if (DEBUG>=1) System.out.println("applyRule: Applying rule " + name);
         
         // Step 1: remove all the edges from the pattern in the clone:
         List<LGraphEdge> edgesToRemove = new ArrayList<LGraphEdge>();
@@ -138,11 +141,14 @@ public class LGraphRewritingRule {
                 edgesToRemove.add(found);
             }
         }
+        if (DEBUG>=1) System.out.println("Step 1: removing edges:");
         for(LGraphEdge e:edgesToRemove) {
+            if (DEBUG>=1) System.out.println("    " + e);
             e.start.getEdges().removeAll(edgesToRemove);
         }
         
         // Step 2: add all the nodes from replacement to the clone:
+        if (DEBUG>=1) System.out.println("Step 2: adding nodes: " + replacement.getNodes().size());
         Map<LGraphNode, LGraphNode> resultMap = new LinkedHashMap<LGraphNode, LGraphNode>();
 //        System.out.println("replacementMap size: " + replacementMap.size());
         for(LGraphNode nr:replacement.getNodes()) {
@@ -165,6 +171,7 @@ public class LGraphRewritingRule {
         
         // Step 3: remove nodes that are in the pattern, but not in the replacement 
         // (Except if they have links to nodes outside of the nodes matched by the pattern):
+        if (DEBUG>=1) System.out.println("Step 3: removing nodes, testing " + nodesInPatternAndNotInReplacement.size() + " nodes");
         List<LGraphNode> image = new ArrayList<LGraphNode>();
         image.addAll(matching.values());
         for(LGraphNode n:nodesInPatternAndNotInReplacement) {
@@ -190,6 +197,7 @@ public class LGraphRewritingRule {
             }
             
             if (remove) {
+                if (DEBUG>=1) System.out.println("    removing node");
                 clone.removeNodeAndAllConnections(cloneMap.get(matching.get(n)));
             }
         }

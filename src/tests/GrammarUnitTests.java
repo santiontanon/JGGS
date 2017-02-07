@@ -11,6 +11,7 @@ import lgraphs.ontology.Ontology;
 import lgraphs.ontology.Sort;
 import lgraphs.sampler.LGraphGrammarSampler;
 import lgraphs.sampler.LGraphRewritingGrammar;
+import lgraphs.sampler.LGraphRewritingRule;
 
 /**
  *
@@ -18,9 +19,10 @@ import lgraphs.sampler.LGraphRewritingGrammar;
  */
 public class GrammarUnitTests {
     public static void main(String args[]) throws Exception {
-        testEdgeNotFound();
-        testCreatesAnyNodes();
-        testIfCIsDeleted();
+//        testEdgeNotFound();
+//        testCreatesAnyNodes();
+//        testIfCIsDeleted();
+        testNodeShouldNotBeDeleted();
     }
     
     
@@ -100,5 +102,40 @@ public class GrammarUnitTests {
         
         generator.printRuleApplicationCounts();
     }
+    
+    
+    /*
+    To see if this test succeeds, make sure that the rule THIS_WORKS_NOT does not delete any node.
+    */
+     public static void testNodeShouldNotBeDeleted() throws Exception 
+    {
+//        LGraph.DEBUG = 1;
+        
+        System.out.println("\n------------------------------------------------\n");
+        Sort.clearSorts();
+        Ontology ontology = new Ontology("data/sampleOntology2.xml");
+        LGraphRewritingGrammar grammar = LGraphRewritingGrammar.load("data/error_not_deleting.txt");
+        
+        System.out.println(grammar);
+        
+        // Create an initial graph:
+        LGraph graph = LGraph.fromString("N0:problem()");
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar);
+                
+        generator.addApplicationLimit("THIS_WORKS", 1);
+        generator.addApplicationLimit("THIS_WORKS_NOT", 1);
+        
+//        LGraphRewritingRule.DEBUG = 1;
+        
+        // Use the grammar to rewrite the graph:
+        do{
+            System.out.println("Current graph:");
+            System.out.println("  " + graph);
+            graph = generator.applyRuleStochastically();
+        }while(graph!=null);
+        
+        generator.printRuleApplicationCounts();
+    }
+    
     
 }
