@@ -200,9 +200,9 @@ public class LGraph {
     
     public boolean equivalent(LGraph g)
     {
-        LGraphMatcher m1 = new LGraphMatcher(this, g);
+        LGraphMatcher m1 = new LGraphMatcher(this, g, true);
         if (m1.nextMatch()!=null) {        
-            LGraphMatcher m2 = new LGraphMatcher(g, this);
+            LGraphMatcher m2 = new LGraphMatcher(g, this, true);
             if (m2.nextMatch()!=null) return true;
         }
         

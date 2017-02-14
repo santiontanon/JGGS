@@ -30,7 +30,7 @@ public class GrammarVisualTest {
         // Create an initial graph:
         LGraph graph = LGraph.fromString("N0:game()");
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true);
         
         // Set some limits to ensure the graph is always finite:
         generator.addApplicationLimit("SEQUENTIAL-TASKS", 3);
