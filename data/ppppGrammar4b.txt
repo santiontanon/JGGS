@@ -1,0 +1,51 @@
+RULE JUST_CONNECT 0.1 0.5 0 TRIVIAL
+    PATTERN A:situation_abst(),B:track(is:B_,partOf:A),C:{track}(is:C_,partOf:A),B_:out(),C_:in()
+    REPLACEMENT B:track(to:C),C:track()
+RULE DELIVERY_TRIVIAL 1.0 0.9 -1 TRIVIAL
+    PATTERN A:situation_abst(),AA:subproblem(),B:track(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA),B_:out(),C_:in()
+    REPLACEMENT A:situation_trivial(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA)
+RULE MAKE_DELIVERY_CRITICAL 1.0 0.5 1 CRITICAL,RACE
+    PATTERN A:situation_trivial(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA,to:D),\
+    D:track(),E:track(to:B),\
+    F:{thread,start_point}(partOf:AA,to:G),G:track()
+	REPLACEMENT A:situation_critical_misdelivery_due_to_race_condition(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA,to:N),\
+    D:track(),E:track(to:M),\
+    M:{track,semaphore,solution}(to:B,partOf:A),N:{track,button,solution}(to:D,partOf:A),\
+    F:{thread,start_point}(partOf:AA,to:O),G:track(),O:{track,thread}(to:G)
+RULE MAKE_DELIVERY_PRE_DEADLOCK 1.0 0.5 1 DEADLOCK
+    PATTERN A:situation_trivial(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA,to:D),\
+    D:track(),E:track(to:B),\
+    F:{thread,start_point}(partOf:AA,to:G),G:track()
+    REPLACEMENT A:situation_critical_misdelivery_due_to_race_condition(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:X),C:{track,delivery}(partOf:A,partOf:AA,to:N),\
+    X:{track,diverter}(partOf:A,to:Y,to:C),Y:{dead_end}(is:Y_),Y_:trash(),\
+    D:track(),E:track(to:M),\
+    M:{track,semaphore,solution}(to:B,partOf:A),N:{track,button,solution}(to:D,partOf:A),\
+    F:{thread,start_point}(partOf:AA,to:O),G:track(),O:{track,thread}(to:G)
+RULE SIMPLE_DEADLOCK 0.9 0.5 1 DEADLOCK
+    PATTERN A:situation_abst(),AA:subproblem(),\
+    B:track(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA),B_:out(),C_:in(),\
+    F:{thread,start_point}(partOf:AA,to:G),G:track()
+    REPLACEMENT A:two_thread_semaphore(),AA:subproblem(),\
+    B:track(is:B_,partOf:A),C:{track}(is:C_,partOf:A),B_:out(),C_:in(),\
+    F:{thread,start_point}(partOf:AA,to:O),G:track(),O:{track,thread}(to:G)
+RULE EXPAND_DEADLOCK 1.0 1.0 -1 REFINEMENT
+    PATTERN A:two_thread_semaphore(),\
+    B:track(is:B_,partOf:A),C:{track}(is:C_,partOf:A),B_:out(),C_:in()
+    REPLACEMENT A:situation_deadlock_two_thread_semaphore(),\
+    B:{track}(partOf:A,to:X),C:{track}(),\
+    X:fork(to:HA,to:HB,has:X_),Y:merge(to:C),X_:conditional()\
+    HA:{track}(partOf:A,to:IA,has:HA_),HA_:button(partOf:X_)\
+    HB:{track}(partOf:A,to:IB,has:HB_),HB_:button(partOf:X_)\
+    IA:{track}(has:IA_,to:JA),IA_:button(partOf:JB_,partOf:K),\
+    IB:{track}(has:IB_,to:JB),IB_:button(partOf:JA_,partOf:K),\
+    JA:{track}(has:JA_,to:Y),JA_:semaphore_red(partOf:K),\
+    JB:{track}(has:JB_,to:Y),JB_:semaphore_red(partOf:K),\
+    K:challenge()
+
+
+    
