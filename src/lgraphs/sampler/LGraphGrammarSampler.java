@@ -43,7 +43,6 @@ public class LGraphGrammarSampler {
         } else {
             r = new Random();
         }
-        r = new Random(randomSeed);
         s = new Sampler(r);
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);

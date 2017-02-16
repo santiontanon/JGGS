@@ -115,10 +115,10 @@ public class LGraphNode {
         return l;
     }
     
-    public List<LGraphEdge> getChildren(Sort edgeLabel, Sort endLabel) {
-        List<LGraphEdge> l = new ArrayList<LGraphEdge>();
+    public List<LGraphNode> getChildren(Sort edgeLabel, Sort endLabel) {
+        List<LGraphNode> l = new ArrayList<LGraphNode>();
         for(LGraphEdge e:edges) {
-            if (e.labelSet.subsumedBy(edgeLabel) && e.end.subsumedBy(endLabel)) l.add(e);
+            if (e.labelSet.subsumedBy(edgeLabel) && e.end.subsumedBy(endLabel)) l.add(e.end);
         }
         return l;
     }
