@@ -167,11 +167,12 @@ public class LGraphRewritingRule {
                 }
             }      
             resultMap.put(nr, nodeClone);
+            if (DEBUG>=1) System.out.println("    Step 2 "+name+": RN" + +replacement.getNodes().indexOf(nr) + "("+nr.labelSet+") maps to " + clone.getNodes().indexOf(nodeClone));
         }
         
         // Step 3: remove nodes that are in the pattern, but not in the replacement 
         // (Except if they have links to nodes outside of the nodes matched by the pattern):
-        if (DEBUG>=1) System.out.println("Step 3: removing nodes, testing " + nodesInPatternAndNotInReplacement.size() + " nodes");
+        if (DEBUG>=1) System.out.println("Step 3 "+name+": removing nodes, testing " + nodesInPatternAndNotInReplacement.size() + " nodes");
         List<LGraphNode> image = new ArrayList<LGraphNode>();
         image.addAll(matching.values());
         for(LGraphNode n:nodesInPatternAndNotInReplacement) {
@@ -198,7 +199,9 @@ public class LGraphRewritingRule {
             
             if (remove) {
                 if (DEBUG>=1) System.out.println("    removing node");
-                clone.removeNodeAndAllConnections(cloneMap.get(matching.get(n)));
+                LGraphNode clone_n = cloneMap.get(matching.get(n));
+                if (DEBUG>=1) System.out.println("    Step 3 "+name+": remove pattern node " + pattern.getNodes().indexOf(n) + "(graph node: " + clone.getNodes().indexOf(clone_n) + ")");
+                clone.removeNodeAndAllConnections(clone_n);
             }
         }
 
@@ -206,10 +209,13 @@ public class LGraphRewritingRule {
         for(LGraphNode nr:replacement.getNodes()) {
             LGraphNode nodeClone = resultMap.get(nr);
             for(LGraphEdge edge:nr.getEdges()) {
-                clone.addEdge(nodeClone, edge.labelSet, resultMap.get(edge.end));
+                LGraphNode nodeClone2 = resultMap.get(edge.end);
+                if (DEBUG>=1) System.out.println("    Step 4 "+name+": adding edge " + clone.getNodes().indexOf(nodeClone) + " -("+edge.labelSet+")-> " + clone.getNodes().indexOf(nodeClone2));
+                clone.addEdge(nodeClone, edge.labelSet, nodeClone2);
             }
         }        
         
+        if (DEBUG>=1) System.out.println(" + ---------------- + ");
         
         return clone;
     }
@@ -229,11 +235,16 @@ public class LGraphRewritingRule {
             }
         }
         tmp +=        "    REPLACEMENT " + replacement.toString() + "\n";
-            int j = 0;
-            for(LGraphNode n:replacementMap.keySet()) {
-                tmp += ("        N" + j + " --> N" + pattern.getNodes().indexOf(replacementMap.get(n))) + "\n";
-                j++;
-            }
+        int j = 0;
+        for(LGraphNode n:replacementMap.keySet()) {
+            tmp += ("        N" + j + " --> N" + pattern.getNodes().indexOf(replacementMap.get(n))) + "\n";
+            j++;
+        }
+        tmp += "        to remove: ";
+        for(LGraphNode n:nodesInPatternAndNotInReplacement) {
+            tmp += "N" + pattern.getNodes().indexOf(n) + " ";
+        }
+        tmp += "\n";
         return tmp;
     }
 }
