@@ -37,7 +37,7 @@ public class LGraphRewritingGrammar {
     private static String readFullLine(BufferedReader br) throws IOException {
         //return br.readLine();
         String line_complete = null;
-        boolean line_finished;
+        boolean line_finished = false;
         do {
             String line = br.readLine();
             if (line == null) {
@@ -46,7 +46,9 @@ public class LGraphRewritingGrammar {
             if(line_complete==null){
                 line_complete = "";
             }
-            line_complete += line.trim();
+            line = line.trim();
+            if(line.startsWith("#")) continue;
+            line_complete += line;
             if (line_complete.endsWith("\\")) {
                 line_finished = false;
                 line_complete = line_complete.substring(0, line_complete.length() - 1);
