@@ -92,14 +92,14 @@ public class LGraphNode {
         edges.remove(e);
     }
     
-    public LGraphNode getFirstChild(Sort edgeLabel) {
+    public LGraphNode getFirstChildNode(Sort edgeLabel) {
         for(LGraphEdge e:edges) {
             if (e.labelSet.subsumedBy(edgeLabel)) return e.end;
         }
         return null;
     }
     
-    public LGraphNode getFirstChild(Sort edgeLabel, Sort endLabel) {
+    public LGraphNode getFirstChildNode(Sort edgeLabel, Sort endLabel) {
         for(LGraphEdge e:edges) {
             if (e.labelSet.subsumedBy(edgeLabel) && e.end.subsumedBy(endLabel)) return e.end;
         }
