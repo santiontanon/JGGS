@@ -16,7 +16,7 @@ import java.util.List;
  * @author santi
  */
 public class Sort {
-    public static boolean strict_sort_creation = true;
+//    public static boolean strict_sort_creation = true;
     static HashMap<String, Sort> table = new LinkedHashMap<String, Sort>();
     static {
         try {
@@ -66,11 +66,11 @@ public class Sort {
 
     public static Sort newSort(String a_name) throws Exception {
         if (table.get(a_name) != null) {
-            if (strict_sort_creation) {
+//            if (strict_sort_creation) {
                 throw new Exception("Sort " + a_name + " already exists!");
-            } else {
-                return table.get(a_name);
-            }
+//            } else {
+//                return table.get(a_name);
+//            }
         } else {
             Sort l = new Sort(a_name);
             table.put(a_name, l);
@@ -80,11 +80,11 @@ public class Sort {
 
     public static Sort newSort(String a_name, String parent) throws Exception {
         if (table.get(a_name)!=null) {
-            if(strict_sort_creation){
+//            if(strict_sort_creation){
                 throw new Exception("Sort " + a_name + " already exists!");   
-            } else {
-                return table.get(a_name);
-            }
+//            } else {
+//                return table.get(a_name);
+//            }
         } else {
             Sort l = new Sort(a_name, table.get(parent));
             table.put(a_name, l);
