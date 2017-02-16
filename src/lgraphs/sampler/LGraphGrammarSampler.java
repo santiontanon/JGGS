@@ -32,31 +32,28 @@ public class LGraphGrammarSampler {
     HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity) {
+        this(a_graph, a_grammar, a_objectIdentity, null);
+    }
+    
+    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, Long randomSeed) {
         currentGraph = a_graph;
         grammar = a_grammar;
-        r = new Random();
+        if(randomSeed==null){
+            r = new Random(randomSeed);
+        } else {
+            r = new Random();
+        }
         s = new Sampler(r);
         objectIdentity = a_objectIdentity;
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);
             currentRuleDecay.put(rule.getName(), rule.decay);
-            if (rule.applicationLimit>=0) ruleApplicationLimit.put(rule.name, rule.applicationLimit);
+            if(rule.applicationLimit>-1){
+                ruleApplicationLimit.put(rule.name, rule.applicationLimit);
+            }
         }
     }
     
-
-    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, long randomSeed) {
-        currentGraph = a_graph;
-        grammar = a_grammar;
-        r = new Random(randomSeed);
-        s = new Sampler(r);
-        objectIdentity = a_objectIdentity;
-        for(LGraphRewritingRule rule:grammar.rules) {
-            currentRuleWeights.put(rule.getName(), rule.weight);
-            currentRuleDecay.put(rule.getName(), rule.decay);
-            if (rule.applicationLimit>=0) ruleApplicationLimit.put(rule.name, rule.applicationLimit);
-        }
-    }
 
     
     public void addApplicationLimit(String ruleName, int limit) {

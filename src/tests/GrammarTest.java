@@ -25,7 +25,7 @@ public class GrammarTest {
         // Create an initial graph:
         LGraph graph = LGraph.fromString("N0:game()");
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0L);
         
         // Set some limits to ensure the graph is always finite:
         generator.addApplicationLimit("SEQUENTIAL-TASKS", 3);

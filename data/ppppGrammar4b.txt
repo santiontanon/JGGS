@@ -1,11 +1,33 @@
-RULE JUST_CONNECT 0.1 0.5 0 TRIVIAL
+RULE JUST_CONNECT 0.1 0.1 0 TRIVIAL
     PATTERN A:situation_abst(),B:track(is:B_,partOf:A),C:{track}(is:C_,partOf:A),B_:out(),C_:in()
     REPLACEMENT B:track(to:C),C:track()
-RULE DELIVERY_TRIVIAL 1.0 0.9 -1 TRIVIAL
+RULE DELIVERY_TRIVIAL 1.0 1.5 -1 TRIVIAL
     PATTERN A:situation_abst(),AA:subproblem(),B:track(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA),B_:out(),C_:in()
     REPLACEMENT A:situation_trivial(),AA:subproblem(),\
     B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA)
-RULE MAKE_DELIVERY_CRITICAL 1.0 0.5 1 CRITICAL,RACE
+RULE MAKE_EXCHANGE_POINT_BETWEEN_PROBLEMS 0.9 0.9 1 TRIVIAL
+    PATTERN A:situation_trivial(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA),\
+    A2:situation_trivial(),AA2:subproblem(),\
+    B2:{track,pickup}(partOf:A2,partOf:AA2,to:C2),C2:{track,delivery}(partOf:A2,partOf:AA2)
+    REPLACEMENT A:situation_exchange(),\
+    B:{track,pickup}(partOf:A,to:X,has:B_),C:{track,delivery}(partOf:A,has:C_),\
+    B2:{track,pickup}(partOf:A,to:X2,has:B2_),C2:{track,delivery}(partOf:A,has:C2_),\
+    X:{track,exchange}(to:C,has:X_),X2:{track,exchange}(to:C2,has:X2_),\
+    B_:pickup_conditional(),B2_:pickup_preventor(),C_:delivery_preventor(),C2_:delivery(),\
+    X_:exchange(partOf:X2_),X2_:exchange(partOf:X_)
+RULE MAKE_EXCHANGE_POINT_BETWEEN_FORK 0.9 0.9 1 SYNCRO
+    PATTERN A:situation_trivial(),AA:subproblem(),\
+    B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA),\
+    A2:situation_trivial(),AA2:subproblem(),\
+    B2:{track,pickup}(partOf:A2,partOf:AA,to:C2),C2:{track,delivery}(partOf:A2,partOf:AA2)
+    REPLACEMENT A:situation_exchange(),\
+    B:{track,pickup}(partOf:A,to:X,has:B_),C:{track,delivery}(partOf:A,has:C_),\
+    B2:{track,pickup}(partOf:A,to:X2,has:B2_),C2:{track,delivery}(partOf:A,has:C2_),\
+    X:{track,exchange}(to:C,has:X_),X2:{track,exchange}(to:C2,has:X2_),\
+    B_:pickup_conditional(),B2_:pickup_preventor(),C_:delivery_preventor(),C2_:delivery(),\
+    X_:exchange(partOf:X2_),X2_:exchange(partOf:X_)
+RULE MAKE_DELIVERY_CRITICAL 1.0 1.0 0 CRITICAL,RACE
     PATTERN A:situation_trivial(),AA:subproblem(),\
     B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA,to:D),\
     D:track(),E:track(to:B),\
@@ -15,7 +37,7 @@ RULE MAKE_DELIVERY_CRITICAL 1.0 0.5 1 CRITICAL,RACE
     D:track(),E:track(to:M),\
     M:{track,semaphore,solution}(to:B,partOf:A),N:{track,button,solution}(to:D,partOf:A),\
     F:{thread,start_point}(partOf:AA,to:O),G:track(),O:{track,thread}(to:G)
-RULE MAKE_DELIVERY_PRE_DEADLOCK 1.0 0.5 1 DEADLOCK
+RULE MAKE_DELIVERY_PRE_DEADLOCK 0.8 0.5 0 DEADLOCK
     PATTERN A:situation_trivial(),AA:subproblem(),\
     B:{track,pickup}(partOf:A,partOf:AA,to:C),C:{track,delivery}(partOf:A,partOf:AA,to:D),\
     D:track(),E:track(to:B),\
@@ -26,7 +48,7 @@ RULE MAKE_DELIVERY_PRE_DEADLOCK 1.0 0.5 1 DEADLOCK
     D:track(),E:track(to:M),\
     M:{track,semaphore,solution}(to:B,partOf:A),N:{track,button,solution}(to:D,partOf:A),\
     F:{thread,start_point}(partOf:AA,to:O),G:track(),O:{track,thread}(to:G)
-RULE SIMPLE_DEADLOCK 0.9 0.5 1 DEADLOCK
+RULE SIMPLE_DEADLOCK 0.5 0.5 0 DEADLOCK
     PATTERN A:situation_abst(),AA:subproblem(),\
     B:track(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA),B_:out(),C_:in(),\
     F:{thread,start_point}(partOf:AA,to:G),G:track()

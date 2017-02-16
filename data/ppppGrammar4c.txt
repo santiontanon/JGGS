@@ -1,4 +1,4 @@
-RULE JUST_CONNECT 1.0 0.4 -1 REFINEMENT
+RULE JUST_CONNECT 1.0 1.0 -1 REFINEMENT
     PATTERN A:situation_abst(),B:track(is:B_,partOf:A),C:{track}(is:C_,partOf:A),B_:out(),C_:in()
     REPLACEMENT B:track(to:C),C:track()
 RULE ADD_THREAD 1.0 0.5 -1 REFINEMENT
@@ -53,8 +53,9 @@ RULE MAKE_DEADENDS_NO_LOOP 1.0 0.5 0 TRIVIAL
     REPLACEMENT A:merge(to:C),C:track(to:D),D:track(to:A)
 RULE SET_FIRST_FORK 1.0 1.0 -1 REFINEMENT
     PATTERN A:fork(to:B,to:C),B:track(),C:track()
-    NEGATEDPATTERN B:track(is:X),X:first()
-    NEGATEDPATTERN C:track(is:X),X:first()
+    NEGATEDPATTERN A:fork(to:B,to:C),B:track(is:X),C:track(),X:first()
+    NEGATEDPATTERN A:fork(to:B,to:C),B:track(),C:track(is:X),X:first()
+    NEGATEDPATTERN A:fork(to:B,to:C),B:track(is:X),C:track(is:X_),X:first(),X_:first()
     REPLACEMENT A:fork(to:B,to:C),B:track(is:X),C:track(),X:first()
 RULE INSTANTIATE_CONTROL_LOOP 1.0 1.0 -1 REFINEMENT
     PATTERN B:control_loop()

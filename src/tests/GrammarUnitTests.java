@@ -149,7 +149,7 @@ public class GrammarUnitTests {
         // Create an initial graph:
         LGraph graph = LGraph.fromString("A:fork(to:B,to:C),B:track(),C:track()");
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0L);
                 
         // Use the grammar to rewrite the graph:
         do{
