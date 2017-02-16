@@ -23,6 +23,7 @@ public class LGraphGrammarSampler {
     LGraph currentGraph;
     Random r;
     Sampler s;
+    boolean objectIdentity;
     
     HashMap<String,Integer> ruleApplicationCounts = new LinkedHashMap<String,Integer>();
     HashMap<String,Double> currentRuleWeights = new LinkedHashMap<String,Double>();
@@ -30,12 +31,21 @@ public class LGraphGrammarSampler {
     
     HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
     
-    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
-        this(a_graph, a_grammar, -1);
+    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity) {
+        currentGraph = a_graph;
+        grammar = a_grammar;
+        r = new Random();
+        s = new Sampler(r);
+        objectIdentity = a_objectIdentity;
+        for(LGraphRewritingRule rule:grammar.rules) {
+            currentRuleWeights.put(rule.getName(), rule.weight);
+            currentRuleDecay.put(rule.getName(), rule.decay);
+            if (rule.applicationLimit>=0) ruleApplicationLimit.put(rule.name, rule.applicationLimit);
+        }
     }
     
 
-    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, long randomSeed) {
+    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, long randomSeed) {
         currentGraph = a_graph;
         grammar = a_grammar;
         if(randomSeed>-1){
@@ -44,6 +54,7 @@ public class LGraphGrammarSampler {
             r = new Random();
         }
         s = new Sampler(r);
+        objectIdentity = a_objectIdentity;
         for(LGraphRewritingRule rule:grammar.rules) {
             currentRuleWeights.put(rule.getName(), rule.weight);
             currentRuleDecay.put(rule.getName(), rule.decay);
@@ -80,7 +91,7 @@ public class LGraphGrammarSampler {
     // Applies the first rule that can be applied:
     // Does not update weights
     public LGraph applyFirstRule() {
-        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar);
+        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar, objectIdentity);
         // enforce the maximum number of applications of a given rule:
         for(String ruleName:ruleApplicationLimit.keySet()) {
             Integer count = ruleApplicationCounts.get(ruleName);
@@ -102,7 +113,7 @@ public class LGraphGrammarSampler {
     public LGraph applyRuleRandomly() {
         List<LGraph> results = new LinkedList<LGraph>();
         List<String> ruleNames = new LinkedList<String>();
-        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar);
+        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar, objectIdentity);
         // enforce the maximum number of applications of a given rule:
         for(String ruleName:ruleApplicationLimit.keySet()) {
             Integer count = ruleApplicationCounts.get(ruleName);
@@ -134,7 +145,7 @@ public class LGraphGrammarSampler {
         List<String> differentRuleNames = new LinkedList<String>();
         List<Double> ruleWeights = new LinkedList<Double>();
         double totalWeight = 0;
-        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar);
+        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar, objectIdentity);
         // enforce the maximum number of applications of a given rule:
         for(String ruleName:ruleApplicationLimit.keySet()) {
             Integer count = ruleApplicationCounts.get(ruleName);

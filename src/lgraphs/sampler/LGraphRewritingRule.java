@@ -218,10 +218,22 @@ public class LGraphRewritingRule {
     public String toString() {
         String tmp =  "RULE " + name + " " + weight + " " + decay + "\n" + 
                       "    PATTERN " + pattern.toString() + "\n";
-        for(LGraph g:negatedPatterns) {
+        for(int i = 0;i<negatedPatterns.size();i++) {
+            LGraph g = negatedPatterns.get(i);
             tmp +=    "    NEGATEDPATTERN " + g.toString() + "\n";
+            Map<LGraphNode, LGraphNode> m = mapsFromNegatedPatterns.get(i);
+            int j = 0;
+            for(LGraphNode n:m.keySet()) {
+                tmp += ("        N" + j + " --> N" + pattern.getNodes().indexOf(m.get(n))) + "\n";
+                j++;
+            }
         }
         tmp +=        "    REPLACEMENT " + replacement.toString() + "\n";
+            int j = 0;
+            for(LGraphNode n:replacementMap.keySet()) {
+                tmp += ("        N" + j + " --> N" + pattern.getNodes().indexOf(replacementMap.get(n))) + "\n";
+                j++;
+            }
         return tmp;
     }
 }

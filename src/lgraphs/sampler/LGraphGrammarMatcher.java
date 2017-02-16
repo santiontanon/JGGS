@@ -20,12 +20,14 @@ public class LGraphGrammarMatcher {
     int currentRule;
     LGraphRuleMatcher matcher;
     List<String> forbiddenRules = new LinkedList<String>();
+    boolean objectIdentity = false;
     
-    public LGraphGrammarMatcher(LGraph a_graph, LGraphRewritingGrammar a_grammar) {
+    public LGraphGrammarMatcher(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity) {
         graph = a_graph;
         grammar = a_grammar;
         currentRule = -1;
         matcher = null;
+        objectIdentity = a_objectIdentity;
     }
     
     
@@ -45,7 +47,7 @@ public class LGraphGrammarMatcher {
                     if (currentRule>=grammar.rules.size()) return null;
                     rule = grammar.rules.get(currentRule);
                 } while(forbiddenRules.contains(rule.name));
-                matcher = new LGraphRuleMatcher(graph, rule);
+                matcher = new LGraphRuleMatcher(graph, rule, objectIdentity);
             }
         
             LGraph next = matcher.getNextResult();

@@ -20,6 +20,7 @@ import java.util.Map;
 public class LGraphMatcher {
     LGraph reference;
     LGraph pattern;
+    boolean objectIdentity = false;
     
     int n,m;
     int []status;
@@ -27,9 +28,10 @@ public class LGraphMatcher {
     
     boolean moreSolutions = true;
     
-    public LGraphMatcher(LGraph a_pattern, LGraph a_reference) {
+    public LGraphMatcher(LGraph a_pattern, LGraph a_reference, boolean a_objectIdentity) {
         reference = a_reference;
         pattern = a_pattern;
+        objectIdentity = a_objectIdentity;
         
         n = a_reference.getNodes().size();
         m = a_pattern.getNodes().size();
@@ -49,9 +51,10 @@ public class LGraphMatcher {
         }
     }
     
-    public LGraphMatcher(LGraph a_pattern, LGraph a_reference, Map<LGraphNode, LGraphNode> map) {
+    public LGraphMatcher(LGraph a_pattern, LGraph a_reference, boolean a_objectIdentity, Map<LGraphNode, LGraphNode> map) {
         reference = a_reference;
         pattern = a_pattern;
+        objectIdentity = a_objectIdentity;
         
         n = a_reference.getNodes().size();
         m = a_pattern.getNodes().size();
@@ -110,7 +113,30 @@ public class LGraphMatcher {
         return map;
     }
     
+    
     public boolean incrementStatus() {
+        if (objectIdentity) {
+            do {
+                if (!incrementStatusInternal()) return false;
+                boolean violatesObjectIdentity = false;
+                for(int i = 0;i<status.length;i++) {
+                    for(int j = i+1;j<status.length;j++) {
+                        if (options[i].get(status[i]) == options[j].get(status[j])) {
+                            violatesObjectIdentity = true;
+                            break;
+                        }
+                    }
+                    if (violatesObjectIdentity) break;
+                }
+                if (!violatesObjectIdentity) return true;
+            }while(true);
+        } else {
+            return incrementStatusInternal();
+        }
+    }
+
+    
+    public boolean incrementStatusInternal() {
         int current = 0;
         do{
             status[current]++;
@@ -121,6 +147,8 @@ public class LGraphMatcher {
         if (current==m) return false;
         return true;
     }
+
+
     
     public Map<LGraphNode, LGraphNode> mappingFromStatus() {
         Map<LGraphNode, LGraphNode> map = new LinkedHashMap<LGraphNode, LGraphNode>();
