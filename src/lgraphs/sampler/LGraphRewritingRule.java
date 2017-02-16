@@ -172,6 +172,8 @@ public class LGraphRewritingRule {
         
         // Step 3: remove nodes that are in the pattern, but not in the replacement 
         // (Except if they have links to nodes outside of the nodes matched by the pattern):
+        // (another exception is when object identity is not enforced, and we have nodes that map
+        //  to the same node in the original graph)
         if (DEBUG>=1) System.out.println("Step 3 "+name+": removing nodes, testing " + nodesInPatternAndNotInReplacement.size() + " nodes");
         List<LGraphNode> image = new ArrayList<LGraphNode>();
         image.addAll(matching.values());
@@ -191,6 +193,18 @@ public class LGraphRewritingRule {
                 for(LGraphEdge e:n2.getEdges()) {
                     if (e.end == toRemove) {
                         // the node has an incoming edge from outside of the image:
+                        remove = false;
+                        break;
+                    }
+                }
+            }
+            
+            for(LGraphNode n2:pattern.getNodes()) {
+                if (matching.get(n2) == matching.get(n)) {
+                    if (!nodesInPatternAndNotInReplacement.contains(n2)) {
+                        // another node 'n2' maps to the same node in the graph that 'n' maps to,
+                        // and 'n2' does not have to be removed
+                        // (this can only happen when object identity is not enforced)
                         remove = false;
                         break;
                     }

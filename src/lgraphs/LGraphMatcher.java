@@ -101,6 +101,7 @@ public class LGraphMatcher {
                     }
                 }
             }
+
         } else {
             if (!incrementStatus()) {
                 moreSolutions = false;
