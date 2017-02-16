@@ -5,6 +5,7 @@
     <sort name="situation_inst" super="any"/>
     <sort name="situation_trivial" super="situation_inst"/>
     <sort name="situation_critical" super="situation_inst"/>
+    <sort name="situation_exchange" super="situation_inst"/>
     <sort name="situation_critical_misdelivery_due_to_race_condition" super="situation_critical"/>
     <sort name="situation_critical_thread_lost" super="situation_critical"/>
     <sort name="situation_critical_no_delivery_due_to_diverter" super="situation_critical"/>
@@ -41,17 +42,20 @@
     <sort name="goal" super="any"/>
     <!-- currently unused, components that are partOf challenge will not be removed -->
 
+    <sort name="preventor" super="any"/> <!-- since I cannot remove labels from a node, I add this node to prevent instantiation -->
     <sort name="component" super="any"/>
     <sort name="thread" super="component"/>
     <sort name="pickup" super="component"/>
     <sort name="pickup_unconditional" super="pickup"/> <!-- this is the default in Java -->
     <sort name="pickup_conditional" super="pickup"/> <!-- this is the default overwritten by rules -->
     <sort name="pickup_limited" super="pickup"/>
+    <sort name="pickup_preventor" super="pickup,preventor"/> <!-- since I cannot remove labels from a node, I add this node to prevent instantiation -->
     <sort name="delivery" super="component"/>
+    <sort name="delivery_preventor" super="delivery,preventor"/>
     <sort name="button" super="component"/>
     <sort name="semaphore" super="component"/>
     <sort name="semaphore_red" super="semaphore"/>
-    <sort name="semaphore_green" super="semaphore"/> <!-- this is the default in Java (overwritten by PCG, it is 0=red in components) -->
+    <sort name="semaphore_green" super="semaphore"/>
     <sort name="exchange" super="component"/>
     <sort name="conditional" super="component"/>
     <sort name="diverter" super="component"/>

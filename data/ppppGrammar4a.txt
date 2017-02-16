@@ -7,7 +7,7 @@ RULE CONTROL_LOOP_TEST 0.9 0.1 0 COMPLICATE
 RULE SUBPROBLEMS 0.1 0.1 -1
     PATTERN A:problem()
     REPLACEMENT A:subproblem(),AA:situation_abst(),AAA:{thread,start_point}(to:AAAA,partOf:A),AAAA:track(to:B),B:{track}(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA,to:D),B_:out(),C_:in(),D:{end_point}(partOf:A)
-RULE MAKE_SUBPROBLEM_ABST_SERIAL_TASKS 0.9 0.5 4 SERIAL
+RULE MAKE_SUBPROBLEM_ABST_SERIAL_TASKS 0.9 0.5 0 SERIAL
     PATTERN A:subproblem(),AA:situation_abst(to:AB),B:{track}(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AA),B_:out(),C_:in()
     REPLACEMENT A:subproblem(),AA:situation_abst(),AB:situation_abst(),B:{track}(is:B_,partOf:A,partOf:AA),C:{track}(is:C_,partOf:A,partOf:AB),B_:out(),C_:in(),\
     I:{track}(is:I_,partOf:AA,partOf:A,to:J),I_:in(),J:{track}(is:J_,partOf:AB,partOf:A),J_:out()
