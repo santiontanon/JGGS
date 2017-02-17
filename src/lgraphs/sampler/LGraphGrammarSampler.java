@@ -38,7 +38,7 @@ public class LGraphGrammarSampler {
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, Long randomSeed) {
         currentGraph = a_graph;
         grammar = a_grammar;
-        if(randomSeed==null){
+        if(randomSeed!=null){
             r = new Random(randomSeed);
         } else {
             r = new Random();
