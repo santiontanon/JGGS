@@ -93,6 +93,15 @@ public class LGraphMatcher {
                     return null;
                 }
             }
+            if (objectIdentity) {
+                if (!statusSatisfiesObjectIdentity()) {
+                    if (!incrementStatus()) {
+                        moreSolutions = false;
+                        return null;
+                    }
+                }
+            }
+
         } else {
             if (!incrementStatus()) {
                 moreSolutions = false;
@@ -114,21 +123,24 @@ public class LGraphMatcher {
     }
     
     
+    public boolean statusSatisfiesObjectIdentity()
+    {
+        for(int i = 0;i<status.length;i++) {
+            for(int j = i+1;j<status.length;j++) {
+                if (options[i].get(status[i]) == options[j].get(status[j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    
     public boolean incrementStatus() {
         if (objectIdentity) {
             do {
                 if (!incrementStatusInternal()) return false;
-                boolean violatesObjectIdentity = false;
-                for(int i = 0;i<status.length;i++) {
-                    for(int j = i+1;j<status.length;j++) {
-                        if (options[i].get(status[i]) == options[j].get(status[j])) {
-                            violatesObjectIdentity = true;
-                            break;
-                        }
-                    }
-                    if (violatesObjectIdentity) break;
-                }
-                if (!violatesObjectIdentity) return true;
+                if (statusSatisfiesObjectIdentity()) return true;
             }while(true);
         } else {
             return incrementStatusInternal();
