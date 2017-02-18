@@ -258,6 +258,9 @@ public class LGraph {
 
 
     public LGraph cloneSubGraph(List<Sort> nodesOfInterest, Map<LGraphNode, LGraphNode> map) {
+        return cloneSubGraph(nodesOfInterest, null, map);
+    }
+    public LGraph cloneSubGraph(List<Sort> nodesOfInterest, List<Sort> edgesOfInterest, Map<LGraphNode, LGraphNode> map) {
         LGraph clone = new LGraph();
 
         for(LGraphNode node:nodes) {
@@ -274,8 +277,17 @@ public class LGraph {
         for(LGraphNode node:nodes) {
             if (map.containsKey(node)) {
                 for(LGraphEdge edge:node.edges) {
-                    if (map.containsKey(edge.end))
-                        clone.addEdge(map.get(node), edge.labelSet, map.get(edge.end));
+                    if (map.containsKey(edge.end)){
+                        if(edgesOfInterest==null) {
+                            clone.addEdge(map.get(node), edge.labelSet, map.get(edge.end));
+                        } else {
+                            for(Sort e:edgesOfInterest){
+                                if(edge.labelSet.subsumedBy(e)){
+                                    clone.addEdge(map.get(node), edge.labelSet, map.get(edge.end));
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
