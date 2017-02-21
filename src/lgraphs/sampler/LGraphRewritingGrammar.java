@@ -24,6 +24,14 @@ import java.util.StringTokenizer;
  */
 public class LGraphRewritingGrammar {
     List<LGraphRewritingRule> rules;
+
+    public List<LGraphRewritingRule> getRules() {
+        return rules;
+    }
+
+    public void setRules(List<LGraphRewritingRule> rules) {
+        this.rules = rules;
+    }
     
     public LGraphRewritingGrammar() {
         rules = new LinkedList<LGraphRewritingRule>();

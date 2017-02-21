@@ -100,7 +100,8 @@ public class Sampler {
             total += f;
         }
 
-        tmp = r.nextDouble() * total;
+        double rnd = r.nextDouble();
+        tmp = total*rnd;
         for (int i = 0; i < distribution.length; i++) {
             accum += distribution[i];
             if (accum >= tmp) {
@@ -161,5 +162,53 @@ public class Sampler {
             exponentiated[i] = Math.pow(distribution[i],exponent);
 
         return weighted(exponentiated);
+    }
+    
+    /*
+    Returns a random distribution with n groups
+     */
+    public List<Double> createDistribution(int groups) {
+        return createDistribution(1.0, groups);
+    }
+
+    /*
+    Returns a random distribution with n groups that adds to a size
+     */
+    public List<Double> createDistribution(double population_size, int groups) {
+        List<Double> lst = new LinkedList();
+        double total = 0.0;
+        for (int i = 0; i < groups; i++) {
+            double d = r.nextDouble();
+            lst.add(d);
+            total += d;
+        }
+        for (int i = 0; i < groups; i++) {
+            lst.set(i, lst.get(i) / total * population_size);
+        }
+        return lst;
+    }
+
+    public List<Integer> createDistribution(int population_size, int groups) {
+        List<Integer> lst = new LinkedList();
+        int total = 0;
+        for (double d : createDistribution(groups)) {
+            int i = new Double(population_size * d).intValue();
+            total += i;
+            lst.add(i);
+        }
+        // Fix rounding errors
+        while (total < population_size) {
+            int i = r.nextInt(groups);
+            lst.set(i, lst.get(i) + 1);
+            total += 1;
+        }
+        while (total > population_size) {
+            int i = r.nextInt(groups);
+            if (lst.get(i) > 0) {
+                lst.set(i, lst.get(i) - 1);
+                total -= 1;
+            }
+        }
+        return lst;
     }
 }
