@@ -11,6 +11,7 @@
     <sort name="situation_critical_no_delivery_due_to_diverter" super="situation_critical"/>
     <sort name="situation_deadlock" super="situation_inst"/>
     <sort name="situation_deadlock_two_thread_semaphore" super="situation_deadlock"/>
+    <sort name="situation_deadlock_two_pickup_delivery" super="situation_critical_thread_lost,situation_deadlock"/>
     <sort name="situation_syncro" super="situation_inst"/>
 
     <sort name="kind_of_iteration" super="any"/>
@@ -45,6 +46,7 @@
     <sort name="preventor" super="any"/> <!-- since I cannot remove labels from a node, I add this node to prevent instantiation -->
     <sort name="component" super="any"/>
     <sort name="thread" super="component"/>
+    <sort name="multithread" super="pcg_hint"/>
     <sort name="pickup" super="component"/>
     <sort name="pickup_unconditional" super="pickup"/> <!-- this is the default in Java -->
     <sort name="pickup_conditional" super="pickup"/> <!-- this is the default overwritten by rules -->

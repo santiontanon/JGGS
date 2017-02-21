@@ -6,14 +6,10 @@
 
 package tests;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Random;
 import javax.swing.JFrame;
 import lgraphs.LGraph;
-import lgraphs.LGraphNode;
 import lgraphs.ontology.Ontology;
-import lgraphs.ontology.Sort;
 import lgraphs.sampler.LGraphGrammarSampler;
 import lgraphs.sampler.LGraphRewritingGrammar;
 import lgraphs.visualization.LGraphVisualizer;
@@ -48,7 +44,7 @@ public class SequentialGrammarTest {
 //        System.out.println(grammar);
         
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, randomSeed);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, new Random(randomSeed));
                 
         // Use the grammar to rewrite the graph:
         do{

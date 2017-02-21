@@ -6,6 +6,7 @@
 
 package tests;
 
+import java.util.Random;
 import lgraphs.LGraph;
 import lgraphs.ontology.Ontology;
 import lgraphs.ontology.Sort;
@@ -149,7 +150,7 @@ public class GrammarUnitTests {
         // Create an initial graph:
         LGraph graph = LGraph.fromString("A:fork(to:B,to:C),B:track(),C:track()");
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0L);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, new Random(0L));
                 
         // Use the grammar to rewrite the graph:
         do{

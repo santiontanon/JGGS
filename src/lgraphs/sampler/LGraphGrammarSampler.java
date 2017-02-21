@@ -6,6 +6,7 @@
 
 package lgraphs.sampler;
 
+import java.util.ArrayList;
 import lgraphs.LGraph;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,6 +20,8 @@ import util.Sampler;
  * @author santi
  */
 public class LGraphGrammarSampler {
+    public static int DEBUG = 0;
+    
     LGraphRewritingGrammar grammar;
     LGraph currentGraph;
     Random r;
@@ -26,22 +29,25 @@ public class LGraphGrammarSampler {
     boolean objectIdentity;
     
     HashMap<String,Integer> ruleApplicationCounts = new LinkedHashMap<String,Integer>();
-
-    public HashMap<String, Integer> getRuleApplicationCounts() {
-        return ruleApplicationCounts;
-    }
-
-    public void setRuleApplicationCounts(HashMap<String, Integer> ruleApplicationCounts) {
-        this.ruleApplicationCounts = ruleApplicationCounts;
-    }
     HashMap<String,Double> currentRuleWeights = new LinkedHashMap<String,Double>();
-    HashMap<String,Double> currentRuleDecay = new LinkedHashMap<String,Double>();
-    
+    HashMap<String,Double> currentRuleDecay = new LinkedHashMap<String,Double>();    
     HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
-    
+
+        
+
+    public LGraphGrammarSampler(LGraphGrammarSampler lggs) {
+        this(lggs.currentGraph, lggs.grammar, lggs.objectIdentity, lggs.r);
+        ruleApplicationCounts.putAll(lggs.ruleApplicationCounts);
+        currentRuleWeights.putAll(lggs.currentRuleWeights);
+        currentRuleDecay.putAll(lggs.currentRuleDecay);
+        ruleApplicationLimit.putAll(lggs.ruleApplicationLimit);
+    }
+
+
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity) {
         this(a_graph, a_grammar, a_objectIdentity, new Random());
     }
+    
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, Random a_r) {
         currentGraph = a_graph;
@@ -57,6 +63,23 @@ public class LGraphGrammarSampler {
             }
         }
     }
+    
+    
+    public HashMap<String, Integer> getRuleApplicationCounts() {
+        return ruleApplicationCounts;
+    }
+
+    
+    public void setRuleApplicationCounts(HashMap<String, Integer> ruleApplicationCounts) {
+        this.ruleApplicationCounts = ruleApplicationCounts;
+    }
+    
+    
+    public LGraph getCurrentGraph()
+    {
+        return currentGraph;
+    }
+
     
     public void addApplicationLimit(String ruleName, int limit) {
         ruleApplicationLimit.put(ruleName, limit);
@@ -180,10 +203,55 @@ public class LGraphGrammarSampler {
         int idx = r.nextInt(filteredResults.size());
         currentGraph = filteredResults.get(idx);
         addRuleApplication(selectedRuleName);
-        System.out.println("   rule selected: " + selectedRuleName);
+        if (DEBUG>=1) System.out.println("   rule selected: " + selectedRuleName);
         currentRuleWeights.put(selectedRuleName, 
                                currentRuleWeights.get(selectedRuleName) * currentRuleDecay.get(selectedRuleName));
         return currentGraph;
     }
+    
+    
+    public List<LGraphGrammarSampler> allPossibleSuccessors() throws Exception
+    {
+        List<LGraph> results = new LinkedList<LGraph>();
+        List<String> ruleNames = new LinkedList<String>();
+        LGraphGrammarMatcher matcher = new LGraphGrammarMatcher(currentGraph, grammar, objectIdentity);
+        // enforce the maximum number of applications of a given rule:
+        for(String ruleName:ruleApplicationLimit.keySet()) {
+            Integer count = ruleApplicationCounts.get(ruleName);
+            if (count==null) count = 0;
+            if (count>=ruleApplicationLimit.get(ruleName)) {
+                matcher.forbidRule(ruleName);
+            }
+        }        
+        LGraph result = null;
+        do {
+            result = matcher.getNextResult();
+            if (result!=null) {
+                results.add(result);
+                String ruleName = matcher.getLastRuleFired().getName();
+                ruleNames.add(ruleName);
+            }
+        } while(result!=null);
+
+        if (results.isEmpty()) return new ArrayList<LGraphGrammarSampler>();
+        
+
+        List<LGraphGrammarSampler> l = new ArrayList<LGraphGrammarSampler>();
+        
+        //System.out.println(ruleNames);
+        
+        for(int idx = 0;idx<results.size();idx++) {
+            LGraphGrammarSampler child = new LGraphGrammarSampler(this);
+            String selectedRuleName = ruleNames.get(idx);
+            child.currentGraph = results.get(idx);
+            child.addRuleApplication(selectedRuleName);
+            if (DEBUG>=1) System.out.println("   rule selected: " + selectedRuleName);
+            child.currentRuleWeights.put(selectedRuleName, 
+                                         child.currentRuleWeights.get(selectedRuleName) * child.currentRuleDecay.get(selectedRuleName));            
+            l.add(child);
+        }
+        
+        return l;
+    }    
     
 }

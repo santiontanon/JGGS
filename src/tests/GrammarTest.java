@@ -6,6 +6,7 @@
 
 package tests;
 
+import java.util.Random;
 import lgraphs.LGraph;
 import lgraphs.ontology.Ontology;
 import lgraphs.sampler.LGraphGrammarSampler;
@@ -25,7 +26,7 @@ public class GrammarTest {
         // Create an initial graph:
         LGraph graph = LGraph.fromString("N0:game()");
         LGraph lastGraph = graph;
-        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, 0L);
+        LGraphGrammarSampler generator = new LGraphGrammarSampler(graph, grammar, true, new Random(0L));
         
         // Set some limits to ensure the graph is always finite:
         generator.addApplicationLimit("SEQUENTIAL-TASKS", 3);
