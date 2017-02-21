@@ -8,6 +8,7 @@ package lgraphs.sampler;
 import java.util.ArrayList;
 import java.util.List;
 import lgraphs.LGraph;
+import lgraphs.LGraphEquivalence;
 
 /**
  *
@@ -38,7 +39,8 @@ public class LGraphGrammarSystematicDFSIterator {
                 if (filterEquivalents) {
                     boolean equivalentFound = false;
                     for(LGraph g:previousSolutions) {
-                        if (g.equivalent(current.getCurrentGraph())) {
+//                        if (g.equivalent(current.getCurrentGraph())) {
+                        if (LGraphEquivalence.equivalents(g, current.getCurrentGraph())) {
                             equivalentFound = true;
                             System.out.println("filtering equivalent!");
                             break;
