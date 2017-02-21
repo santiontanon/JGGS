@@ -7,7 +7,6 @@
 package lgraphs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,8 @@ public class LGraphEquivalence {
         
     public static boolean equivalents(LGraph g1, LGraph g2) {        
         int m = g1.getNodes().size();
+        
+        if (g2.getNodes().size()!=m) return false;
         
         List<LGraphNode> []options = new List[m];
         int []status = null;
@@ -65,7 +66,7 @@ public class LGraphEquivalence {
             if (options[i].isEmpty()) return false;
         }
 //        System.out.println(Arrays.toString(options));
-        
+
         status = new int[m];
         for(int i = 0;i<m;i++) status[i] = 0;
         if (!statusSatisfiesObjectIdentity(status, options)) {
