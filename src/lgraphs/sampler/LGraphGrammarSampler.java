@@ -26,23 +26,27 @@ public class LGraphGrammarSampler {
     boolean objectIdentity;
     
     HashMap<String,Integer> ruleApplicationCounts = new LinkedHashMap<String,Integer>();
+
+    public HashMap<String, Integer> getRuleApplicationCounts() {
+        return ruleApplicationCounts;
+    }
+
+    public void setRuleApplicationCounts(HashMap<String, Integer> ruleApplicationCounts) {
+        this.ruleApplicationCounts = ruleApplicationCounts;
+    }
     HashMap<String,Double> currentRuleWeights = new LinkedHashMap<String,Double>();
     HashMap<String,Double> currentRuleDecay = new LinkedHashMap<String,Double>();
     
     HashMap<String,Integer> ruleApplicationLimit = new LinkedHashMap<String,Integer>();
     
     public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity) {
-        this(a_graph, a_grammar, a_objectIdentity, null);
+        this(a_graph, a_grammar, a_objectIdentity, new Random());
     }
     
-    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, Long randomSeed) {
+    public LGraphGrammarSampler(LGraph a_graph, LGraphRewritingGrammar a_grammar, boolean a_objectIdentity, Random a_r) {
         currentGraph = a_graph;
         grammar = a_grammar;
-        if(randomSeed!=null){
-            r = new Random(randomSeed);
-        } else {
-            r = new Random();
-        }
+        r = a_r;
         s = new Sampler(r);
         objectIdentity = a_objectIdentity;
         for(LGraphRewritingRule rule:grammar.rules) {
@@ -53,8 +57,6 @@ public class LGraphGrammarSampler {
             }
         }
     }
-    
-
     
     public void addApplicationLimit(String ruleName, int limit) {
         ruleApplicationLimit.put(ruleName, limit);
@@ -167,8 +169,6 @@ public class LGraphGrammarSampler {
         for(int i = 0;i<probabilities.length;i++) {
             probabilities[i] = ruleWeights.get(i)/totalWeight;
         }            
-//        System.out.println(differentRuleNames);
-//        System.out.println(ruleWeights);
         int selected = s.weighted(probabilities);
         String selectedRuleName = differentRuleNames.get(selected);
         
