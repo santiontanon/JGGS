@@ -99,12 +99,7 @@ public class LGraphRewritingRule {
         }
     }
 
-    
-    public String getName() {
-        return name;
-    }
-    
-    
+
     public LGraph applyRule(LGraph graph, Map<LGraphNode, LGraphNode> matching) {
         Map<LGraphNode, LGraphNode> cloneMap = new LinkedHashMap<LGraphNode, LGraphNode>();
         LGraph clone = graph.clone(cloneMap);
@@ -261,4 +256,35 @@ public class LGraphRewritingRule {
         tmp += "\n";
         return tmp;
     }
+    
+    
+    public String getName()
+    {
+        return name;
+    }
+    
+    
+    public String getTopic()
+    {
+        return topic;
+    }
+    
+    
+    public LGraph getPattern()
+    {
+        return pattern;
+    }
+
+    
+    public List<LGraph> getNegatedPatterns()
+    {
+        return negatedPatterns;
+    }
+
+    
+    public LGraph getReplacement()
+    {
+        return replacement;
+    }
+
 }

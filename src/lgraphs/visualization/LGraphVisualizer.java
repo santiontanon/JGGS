@@ -7,13 +7,8 @@
 package lgraphs.visualization;
 
 
-import java.awt.Dimension;
-import java.awt.geom.Rectangle2D;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import lgraphs.LGraph;
 import lgraphs.LGraphEdge;
 import lgraphs.LGraphNode;
@@ -23,12 +18,8 @@ import prefuse.Visualization;
 import prefuse.action.ActionList;
 import prefuse.action.RepaintAction;
 import prefuse.action.assignment.ColorAction;
-import prefuse.action.assignment.DataColorAction;
-import prefuse.action.layout.Layout;
 import prefuse.action.layout.graph.ForceDirectedLayout;
-import prefuse.action.layout.graph.NodeLinkTreeLayout;
 import prefuse.activity.Activity;
-import prefuse.controls.ControlAdapter;
 import prefuse.controls.DragControl;
 import prefuse.controls.PanControl;
 import prefuse.controls.ZoomControl;
@@ -38,16 +29,11 @@ import prefuse.data.Node;
 import prefuse.render.DefaultRendererFactory;
 import prefuse.render.EdgeRenderer;
 import prefuse.render.LabelRenderer;
-import prefuse.render.PolygonRenderer;
 import prefuse.util.ColorLib;
-import prefuse.util.GraphicsLib;
-import prefuse.util.display.DisplayLib;
 import prefuse.util.force.DragForce;
 import prefuse.util.force.ForceSimulator;
 import prefuse.util.force.NBodyForce;
 import prefuse.util.force.SpringForce;
-import prefuse.visual.AggregateItem;
-import prefuse.visual.AggregateTable;
 import prefuse.visual.VisualGraph;
 import prefuse.visual.VisualItem;
 
@@ -111,7 +97,7 @@ public class LGraphVisualizer extends Display {
                 ForceDirectedLayout fdl = new ForceDirectedLayout(GRAPH, true);
                 ForceSimulator m_fsim = new ForceSimulator();
                 m_fsim.addForce(new NBodyForce());
-                m_fsim.addForce(new SpringForce(1E-4f,100));
+                m_fsim.addForce(new SpringForce(0.5E-4f,100));
                 m_fsim.addForce(new DragForce());
                 fdl.setForceSimulator(m_fsim);
 
