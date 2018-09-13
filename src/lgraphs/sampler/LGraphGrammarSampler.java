@@ -171,6 +171,7 @@ public class LGraphGrammarSampler {
             }
         }        
         LGraph result = null;
+        if (DEBUG>=1) System.out.println("Getting pottential applications:");
         do {
             result = matcher.getNextResult();
             if (result!=null) {
@@ -185,6 +186,7 @@ public class LGraphGrammarSampler {
                 }
             }
         } while(result!=null);
+        if (DEBUG>=1) System.out.println("results: " + results.size());
 
         if (results.isEmpty()) return null;
         
@@ -194,6 +196,7 @@ public class LGraphGrammarSampler {
         }            
         int selected = s.weighted(probabilities);
         String selectedRuleName = differentRuleNames.get(selected);
+        if (DEBUG>=1) System.out.println("Rule fired: " + selectedRuleName);
         
         List<LGraph> filteredResults = new LinkedList<LGraph>();
         for(int i = 0;i<results.size();i++) {
