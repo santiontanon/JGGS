@@ -7,6 +7,7 @@
 package lgraphs.sampler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import lgraphs.LGraph;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -104,6 +105,19 @@ public class LGraphGrammarSampler {
     }
     
     
+    public boolean ruleWithTagWasTriggered(String tag) {
+        for(LGraphRewritingRule rule:grammar.getRules()) {
+            if (ruleApplicationCounts.get(rule.name) != null &&
+                ruleApplicationCounts.get(rule.name) > 0) {
+                if (rule.tags.contains(tag)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    
     // Applies the first rule that can be applied:
     // Does not update weights
     public LGraph applyFirstRule() {
@@ -194,6 +208,8 @@ public class LGraphGrammarSampler {
         for(int i = 0;i<probabilities.length;i++) {
             probabilities[i] = ruleWeights.get(i)/totalWeight;
         }            
+        if (DEBUG>=1) System.out.println("Applicable rules: " + differentRuleNames);
+        if (DEBUG>=1) System.out.println("Weights: " + ruleWeights);
         int selected = s.weighted(probabilities);
         String selectedRuleName = differentRuleNames.get(selected);
         if (DEBUG>=1) System.out.println("Rule fired: " + selectedRuleName);

@@ -22,12 +22,12 @@ public class LGraphRewritingRule {
     public static int DEBUG = 0;
     String name;            // rules can have a name, with the purposes ot informing the user
                             // which rules were fired.
-    double weight;          // If the generation algorithm is stochastic, use this weight to 
+    public double weight;   // If the generation algorithm is stochastic, use this weight to 
                             // compute the probability of firing this rule versus other rules
                             // The probability will be "weight/sum of weights"
     double decay;           // The decay with which the weight decreases after each application
     int applicationLimit;   // Optional ruleApplicationLimit from grammar file, -1 for no limit
-    String topic;           // Optional string to group the rules
+    List<String> tags;           // Optional string to group the rules
     
     LGraph pattern;
     List<LGraph> negatedPatterns;
@@ -44,6 +44,7 @@ public class LGraphRewritingRule {
         mapsFromNegatedPatterns = null;
         replacement = a_result;
         replacementMap = a_map;
+        tags = new ArrayList();
     }
 
     public LGraphRewritingRule(String a_name, double a_weight, double a_decay, LGraph a_pattern, LGraph a_result, Map<LGraphNode, LGraphNode> a_map) {
@@ -56,7 +57,7 @@ public class LGraphRewritingRule {
         replacement = a_result;
         replacementMap = a_map;
         applicationLimit = -1;
-        topic = null;
+        tags = new ArrayList();
         
         nodesInPatternAndNotInReplacement = new ArrayList<LGraphNode>();
         for(LGraphNode n:pattern.getNodes()) {
@@ -74,7 +75,7 @@ public class LGraphRewritingRule {
 
     public LGraphRewritingRule(String a_name, double a_weight, double a_decay, LGraph a_pattern, 
                                List<LGraph> a_negatedPatterns, List<Map<LGraphNode, LGraphNode>> a_mapsFromNegatedPatterns,
-                               LGraph a_replacement, Map<LGraphNode, LGraphNode> a_replacementMap, int a_applicationLimit, String a_topic) {
+                               LGraph a_replacement, Map<LGraphNode, LGraphNode> a_replacementMap, int a_applicationLimit, List<String> a_tags) {
         name = a_name;
         weight = a_weight;
         decay = a_decay;
@@ -84,7 +85,7 @@ public class LGraphRewritingRule {
         replacement = a_replacement;
         replacementMap = a_replacementMap;
         applicationLimit = a_applicationLimit;
-        topic = a_topic;
+        tags = a_tags;
 
         nodesInPatternAndNotInReplacement = new ArrayList<LGraphNode>();
         for(LGraphNode n:pattern.getNodes()) {
@@ -264,9 +265,9 @@ public class LGraphRewritingRule {
     }
     
     
-    public String getTopic()
+    public List<String> getTags()
     {
-        return topic;
+        return tags;
     }
     
     

@@ -88,9 +88,12 @@ public class LGraphRewritingGrammar {
                 if (st.hasMoreTokens()){
                     applicationLimit = Integer.parseInt(st.nextToken());
                 }
-                String topic = null;
+                String tagsStr = null;
+                List<String> tags = new ArrayList();
                 if (st.hasMoreTokens()){
-                    topic = st.nextToken();
+                    tagsStr = st.nextToken();
+                    StringTokenizer st2 = new StringTokenizer(tagsStr,",");
+                    while(st2.hasMoreTokens()) tags.add(st2.nextToken());
                 }
                 
                 String patternString = null;
@@ -147,7 +150,7 @@ public class LGraphRewritingGrammar {
                         r2pmap.put(replacementMap.get(nodeName), patternMap.get(nodeName));
                     }
                 }
-                grammar.addRule(new LGraphRewritingRule(ruleName, weight, decay, pattern, negatedPatterns, negatedPatternMaps, replacement, r2pmap, applicationLimit, topic));
+                grammar.addRule(new LGraphRewritingRule(ruleName, weight, decay, pattern, negatedPatterns, negatedPatternMaps, replacement, r2pmap, applicationLimit, tags));
             } else {
                 throw new Exception("Expected token \"RULE\", but found \"" + token + "\"");
             }
